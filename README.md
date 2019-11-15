@@ -25,7 +25,7 @@ Do note that you may not need to use every single table listed in the solution f
 If you feel you need more tables than what is listed above, that’s fine too. The list above is only meant as a suggestion for where you can start. 
 
 
-Using a Different Programming Language/Database From Java/Oracle or PHP/Oracle
+## Using a Different Programming Language/Database From Java/Oracle or PHP/Oracle
 
 You are welcome to use another programming language/database combination subject to these conditions:
 
@@ -38,11 +38,11 @@ You are welcome to use another programming language/database combination subject
 4.If you run into any technical issues, the course staff will be unable to help.
 
 
-Functionality
+## Functionality
 
 Your project should support the following actions. When results are required to be returned, there should be about 10-15 tuples in your result set.
 
-Transactions performed by a customer 
+### Transactions performed by a customer 
 
 •View the number of available vehicles for a specific car type, location, and time interval. The user should be able to provide any subset of {car type, location, time interval} to view the available vehicles. If the user provides no information, your application should automatically return a list of all vehicles (at that branch) sorted in some reasonable way for the user to peruse.
 
@@ -54,7 +54,7 @@ Upon successful completion, a confirmation numberfor the reservation should be s
 
 If the customer’s desired vehicle is not available, an appropriate error message should be shown.
 
-Transactions performed by a clerk
+### Transactions performed by a clerk
 
 •Renting a Vehicle: The system will display a receipt withthe necessary details (e.g., confirmation number, date of reservation, type of car, location, how long the rental period lasts for, etc.) for the customer. 
 
@@ -74,7 +74,7 @@ Note: It is not necessary for a user to have made a reservation prior torenting 
 For each transaction,make sure to check for basic errors and produce appropriate error messages for the user. For example, if the “make a reservation” feature failed for a customer, the GUI should clearly indicate that this is the case.
 
 
-User Interface 
+## User Interface 
 
 Create an easy to use GUI that allows users to execute all the operations and transactions provided by the system. In other words, don’t worry about having the GUI change based on which user is accessing the system. In this case, any user accessing your system can use either the customer or clerk menu. 
 
