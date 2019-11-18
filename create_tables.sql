@@ -64,10 +64,10 @@ create table vehicleType
 
 create table customer
 (
-    cellphone number(11)  not null PRIMARY KEY,
+    cellphone number(11)  not null,
     name      varchar(50) not null,
     address   varchar(50) not null,
-    dlicense  varchar(20) not null
+    dlicense  varchar(20) not null PRIMARY KEY
 );
 
 create table clubMember
@@ -80,8 +80,7 @@ create table clubMember
 
 create table vehicle
 (
-    vid      integer       not null PRIMARY KEY,
-    vlicense varchar(10)   not null,
+    vlicense varchar(10)   not null PRIMARY KEY,
     make     varchar(20)   not null,
     model    varchar(20)   not null,
     year     number(4, 0)  not null,
@@ -93,7 +92,7 @@ create table vehicle
     city     varchar(20)   not null,
     foreign key (vtname) references vehicleType,
     foreign key (location, city) references branch,
-    constraint CHK_status check (status = 'for_rent' OR status = 'for_sale' )
+    constraint CHK_status check (status = 'rented' OR status = 'maintenance' OR status='available')
 );
 
 create table branch
