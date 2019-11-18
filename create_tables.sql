@@ -24,7 +24,7 @@ create table reservation
 create table rental
 (
     rental_rid         char(6)     not null PRIMARY KEY,
-    vehicle_vid        char(5)     not null,
+    vlicense           char(5)     not null,
     customer_cellphone char(10)    not null,
     rental_fromDate    date        not null,
     rental_fromTime    time        not null,
@@ -35,7 +35,7 @@ create table rental
     rental_cardNo      char(16)    not null,
     rental_ExpDate     char(4)     not null,
     res_confNo         char(10),
-    foreign key (vehicle_vid) references vehicle,
+    foreign key (vlicense) references vehicle,
     foreign key (customer_cellphone) references customer,
     foreign key (res_confNo) references reservation
 );
@@ -86,13 +86,13 @@ create table vehicle
     year     number(4, 0)  not null,
     color    varchar(10)   not null,
     odometer number(10, 2) not null,
-    status   varchar(11)       not null,
+    status   varchar(11)   not null,
     vtname   varchar(20)   not null,
     location varchar(20)   not null,
     city     varchar(20)   not null,
     foreign key (vtname) references vehicleType,
     foreign key (location, city) references branch,
-    constraint CHK_status check (status = 'rented' OR status = 'maintenance' OR status='available')
+    constraint CHK_status check (status = 'rented' OR status = 'maintenance' OR status = 'available')
 );
 
 -- create table branch
