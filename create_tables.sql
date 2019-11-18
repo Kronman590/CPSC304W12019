@@ -61,12 +61,13 @@ create table vehicle
     year number(4,0) not null,
     color char(10) not null,
     odometer number(10,2) not null,
-    status char(10) not null,
+    status char(8) not null,
     vtName char(20) not null,
     location char(20) not null,
     city char(20) not null,
     foreign key (vtName) references vehicleType,
-    foreign key (location, city) references branch
+    foreign key (location, city) references branch,
+    constraint CHK_status check (status='for_rent' OR status='for_sale'  )
 );
 
 create table branch
@@ -80,11 +81,12 @@ create table equipment
 (
     eid integer not null PRIMARY KEY,
     etname char(20) not null,
-    status char(10) not null,
+    status char(13) not null,
     location char(20) not null,
     city char(20) not null,
     foreign key (location, city) references branch,
-    foreign key (etname) references equipType
+    foreign key (etname) references equipType,
+    constraint CHK_status check (status='available' OR status='rented' OR status='not_available')
 );
 
 create table equipType
