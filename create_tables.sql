@@ -86,7 +86,7 @@ create table vehicle
     year     number(4, 0)  not null,
     color    varchar(10)   not null,
     odometer number(10, 2) not null,
-    status   char(8)       not null,
+    status   varchar(11)       not null,
     vtname   varchar(20)   not null,
     location varchar(20)   not null,
     city     varchar(20)   not null,
