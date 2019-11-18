@@ -95,12 +95,12 @@ create table vehicle
     constraint CHK_status check (status = 'rented' OR status = 'maintenance' OR status = 'available')
 );
 
--- create table branch
--- (
---     location varchar(20),
---     city     varchar(20),
---     PRIMARY KEY (location, city)
--- );
+create table branch
+(
+    location varchar(20),
+    city     varchar(20),
+    PRIMARY KEY (location, city)
+);
 
 -- create table equipment
 -- (
@@ -137,7 +137,8 @@ create table return
     return_time time          not null,
     fulltank    char(1)       not null, /*1 = true, 0 = false*/
     value       number(10, 20 not null,
-    foreign key (rental_rid) references rental
+    foreign key (rental_rid) references rental,
+    constraint CHK_fulltank check (fulltank=1 OR fulltank=0)
 );
 
 create table timePeriod
