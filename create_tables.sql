@@ -1,14 +1,14 @@
 create table reservation
 (
     res_confNo         char(10)   not null PRIMARY KEY,
-    vehicleType_vtname varchar(9) not null,
-    customer_cellphone char(10)   not null,
+    vtname			   varchar(9) not null,
+    dlicense		   varchar(20)not null,
     rental_fromDate    date       not null,
     rental_fromTime    time       not null,
     rental_toDate      date       not null,
     rental_toTime      time       not null,
-    foreign key (vehicleType_vtname) references vehicleType,
-    foreign key (customer_cellphone) references customer,
+    foreign key (vtname) references vehicleType,
+    foreign key (dlicense) references customer,
     foreign key (rental_fromDate, rental_fromTime, rental_toDate, rental_toTime) references rental
 );
 
@@ -24,8 +24,8 @@ create table reservation
 create table rental
 (
     rental_rid         char(6)     not null PRIMARY KEY,
-    vlicense           char(5)     not null,
-    customer_cellphone char(10)    not null,
+    vlicense           varchar(10) not null,
+    dlicense	       varchar(20) not null,
     rental_fromDate    date        not null,
     rental_fromTime    time        not null,
     rental_toDate      date        not null,
@@ -36,7 +36,7 @@ create table rental
     rental_ExpDate     char(4)     not null,
     res_confNo         char(10),
     foreign key (vlicense) references vehicle,
-    foreign key (customer_cellphone) references customer,
+    foreign key (dlicense) references customer,
     foreign key (res_confNo) references reservation
 );
 
@@ -51,7 +51,7 @@ create table rental
 
 create table vehicleType
 (
-    vtname   varchar(20)   not null PRIMARY KEY,
+    vtname   varchar(9)   not null PRIMARY KEY,
     features varchar(50)   not null,
     hrate    number(10, 2) not null,
     drate    number(10, 2) not null,
@@ -91,16 +91,26 @@ create table vehicle
     location varchar(20)   not null,
     city     varchar(20)   not null,
     foreign key (vtname) references vehicleType,
-    foreign key (location, city) references branch,
     constraint CHK_status check (status = 'rented' OR status = 'maintenance' OR status = 'available')
 );
 
-create table branch
+create table return
 (
-    location varchar(20),
-    city     varchar(20),
-    PRIMARY KEY (location, city)
+    rental_rid  char(6)       not null PRIMARY KEY,
+    return_date date          not null,
+    return_time time          not null,
+    fulltank    char(1)       not null, /*1 = true, 0 = false*/
+    value       number(10,20) not null,
+    foreign key (rental_rid) references rental,
+    constraint CHK_fulltank check (fulltank=1 OR fulltank=0)
 );
+
+--create table branch
+--(
+--    location varchar(20),
+--    city     varchar(20),
+--    PRIMARY KEY (location, city)
+--);
 
 -- create table equipment
 -- (
@@ -130,17 +140,7 @@ create table branch
 --     foreign key (vtname) references vehicleType
 -- );
 
-create table return
-(
-    rental_rid  char(6)       not null PRIMARY KEY,
-    return_date date          not null,
-    return_time time          not null,
-    fulltank    char(1)       not null, /*1 = true, 0 = false*/
-    value       number(10, 20 not null,
-    foreign key (rental_rid) references rental,
-    constraint CHK_fulltank check (fulltank=1 OR fulltank=0)
-);
-
+/*
 create table timePeriod
 (
     fromDate date not null,
@@ -149,7 +149,7 @@ create table timePeriod
     toTime   time not null,
     PRIMARY KEY (fromDate, fromTime, toDate, toTime)
 );
-
+*/
 /* TODO, still just example tables
 create table branch ( 
 	branch_id integer not null PRIMARY KEY,
