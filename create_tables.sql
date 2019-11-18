@@ -76,6 +76,24 @@ create table branch
     PRIMARY KEY (location, city)
 );
 
+create table equipment
+(
+    eid integer not null PRIMARY KEY,
+    etname char(20) not null,
+    status char(10) not null,
+    location char(20) not null,
+    city char(20) not null,
+    foreign key (location, city) references branch,
+    foreign key (etname) references equipType
+);
+
+create table equipType
+(
+    etname char(20) not null PRIMARY KEY,
+    drate number(10,2) not null,
+    hrate number(10,2) not null
+);
+
 /* TODO, still just example tables
 create table branch ( 
 	branch_id integer not null PRIMARY KEY,
