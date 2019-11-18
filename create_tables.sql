@@ -12,14 +12,14 @@ create table reservation
     foreign key (rental_fromDate, rental_fromTime, rental_toDate, rental_toTime) references rental
 );
 
-create table reserveIncludes
-(
-    res_confno char(10) not null,
-    etname     char(20) not null,
-    PRIMARY KEY (res_confno, etname),
-    foreign key (res_confno) references reservation,
-    foreign key (etname) references equipType
-);
+-- create table reserveIncludes
+-- (
+--     res_confno char(10) not null,
+--     etname     char(20) not null,
+--     PRIMARY KEY (res_confno, etname),
+--     foreign key (res_confno) references reservation,
+--     foreign key (etname) references equipType
+-- );
 
 create table rental
 (
@@ -40,14 +40,14 @@ create table rental
     foreign key (res_confNo) references reservation
 );
 
-create table rentIncludes
-(
-    rental_rid char(6) not null,
-    eid        integer not null,
-    PRIMARY KEY (rental_rid, eid),
-    foreign key (rental_rid) references rental,
-    foreign key (eid) references equipment
-);
+-- create table rentIncludes
+-- (
+--     rental_rid char(6) not null,
+--     eid        integer not null,
+--     PRIMARY KEY (rental_rid, eid),
+--     foreign key (rental_rid) references rental,
+--     foreign key (eid) references equipment
+-- );
 
 create table vehicleType
 (
@@ -70,13 +70,13 @@ create table customer
     dlicense  varchar(20) not null PRIMARY KEY
 );
 
-create table clubMember
-(
-    cellphone number(11)    not null PRIMARY KEY,
-    points    number(10, 2) not null,
-    fees      number(10, 2) not null,
-    foreign key (cellphone) references customer
-)
+-- create table clubMember
+-- (
+--     cellphone number(11)    not null PRIMARY KEY,
+--     points    number(10, 2) not null,
+--     fees      number(10, 2) not null,
+--     foreign key (cellphone) references customer
+-- );
 
 create table vehicle
 (
@@ -95,40 +95,40 @@ create table vehicle
     constraint CHK_status check (status = 'rented' OR status = 'maintenance' OR status='available')
 );
 
-create table branch
-(
-    location varchar(20),
-    city     varchar(20),
-    PRIMARY KEY (location, city)
-);
+-- create table branch
+-- (
+--     location varchar(20),
+--     city     varchar(20),
+--     PRIMARY KEY (location, city)
+-- );
 
-create table equipment
-(
-    eid      integer     not null PRIMARY KEY,
-    etname   varchar(20) not null,
-    status   varchar(13) not null,
-    location varchar(20) not null,
-    city     varchar(20) not null,
-    foreign key (location, city) references branch,
-    foreign key (etname) references equipType,
-    constraint CHK_status check (status = 'available' OR status = 'rented' OR status = 'not_available')
-);
+-- create table equipment
+-- (
+--     eid      integer     not null PRIMARY KEY,
+--     etname   varchar(20) not null,
+--     status   varchar(13) not null,
+--     location varchar(20) not null,
+--     city     varchar(20) not null,
+--     foreign key (location, city) references branch,
+--     foreign key (etname) references equipType,
+--     constraint CHK_status check (status = 'available' OR status = 'rented' OR status = 'not_available')
+-- );
 
-create table equipType
-(
-    etname varchar(20)   not null PRIMARY KEY,
-    drate  number(10, 2) not null,
-    hrate  number(10, 2) not null
-);
+-- create table equipType
+-- (
+--     etname varchar(20)   not null PRIMARY KEY,
+--     drate  number(10, 2) not null,
+--     hrate  number(10, 2) not null
+-- );
 
-create table EForV
-(
-    etname varchar(20) not null,
-    vtname varchar(20) not null,
-    PRIMARY KEY (etname, vtname),
-    foreign key (etname) references equipType,
-    foreign key (vtname) references vehicleType
-);
+-- create table EForV
+-- (
+--     etname varchar(20) not null,
+--     vtname varchar(20) not null,
+--     PRIMARY KEY (etname, vtname),
+--     foreign key (etname) references equipType,
+--     foreign key (vtname) references vehicleType
+-- );
 
 create table return
 (
