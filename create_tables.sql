@@ -1,4 +1,35 @@
-// TODO, still just example tables
+create table reservation (
+	res_confNo char(10) not null PRIMARY KEY,
+	vehicleType_vtname varchar(9) not null,
+	customer_cellphone char(10) not null,
+	rental_fromDate date not null,
+	rental_fromTime time not null,
+	rental_toDate date not null,
+	rental_toTime time not null,
+	foreign key (vehicleType_vtname) references vehicleType,
+	foreign key (customer_cellphone) references customer,
+	foreign key (rental_fromDate, rental_fromTime, rental_toDate, rental_toTime) references rental
+);
+
+create table rental (
+	rental_rid char(6) not null PRIMARY KEY,
+	vehicle_vid char(5) not null,
+	customer_cellphone char(10) not null,
+	rental_fromDate date not null,
+	rental_fromTime time not null,
+	rental_toDate date not null,
+	rental_toTime time not null,
+	rental_odometer int not null,
+	rental_cardName varchar(20) not null,
+	rental_cardNo char(16) not null,
+	rental_ExpDate char(4) not null,
+	res_confNo char(10),
+	foreign key (vehicle_vid) references vehicle,
+	foreign key (customer_cellphone) references customer,
+	foreign key (res_confNo) references reservation
+);
+
+/* TODO, still just example tables
 create table branch ( 
 	branch_id integer not null PRIMARY KEY,
 	branch_name varchar2(20) not null,
@@ -38,5 +69,5 @@ create table exam (
 	foreign key (driver_sin) references driver,
 	foreign key (branch_id) references branch
 );
-
+*/
 commit;
