@@ -12,6 +12,15 @@ create table reservation
     foreign key (rental_fromDate, rental_fromTime, rental_toDate, rental_toTime) references rental
 );
 
+create table reserveIncludes
+(
+    res_confno char(10) not null,
+    etname     char(20) not null,
+    PRIMARY KEY (res_confno, etname),
+    foreign key (res_confno) references reservation,
+    foreign key (etname) references equipType
+);
+
 create table rental
 (
     rental_rid         char(6)     not null PRIMARY KEY,
@@ -31,10 +40,19 @@ create table rental
     foreign key (res_confNo) references reservation
 );
 
+create table rentIncludes
+(
+    rental_rid char(6) not null,
+    eid        integer not null,
+    PRIMARY KEY (rental_rid, eid),
+    foreign key (rental_rid) references rental,
+    foreign key (eid) references equipment
+);
+
 create table vehicleType
 (
-    vtName   char(20)      not null PRIMARY KEY,
-    features char(50)      not null,
+    vtname   varchar(20)   not null PRIMARY KEY,
+    features varchar(50)   not null,
     hrate    number(10, 2) not null,
     drate    number(10, 2) not null,
     wrate    number(10, 2) not null,
@@ -46,54 +64,90 @@ create table vehicleType
 
 create table customer
 (
-    cellphone number(11) not null PRIMARY KEY,
-    name char(50) not null,
-    address char(50) not null,
-    dlicense char(20) not null
+    cellphone number(11)  not null PRIMARY KEY,
+    name      varchar(50) not null,
+    address   varchar(50) not null,
+    dlicense  varchar(20) not null
 );
+
+create table clubMember
+(
+    cellphone number(11)    not null PRIMARY KEY,
+    points    number(10, 2) not null,
+    fees      number(10, 2) not null,
+    foreign key (cellphone) references customer
+)
 
 create table vehicle
 (
-    vid integer not null PRIMARY KEY,
-    vlicense char(10) not null,
-    make char(20) not null,
-    model char(20) not null,
-    year number(4,0) not null,
-    color char(10) not null,
-    odometer number(10,2) not null,
-    status char(8) not null,
-    vtName char(20) not null,
-    location char(20) not null,
-    city char(20) not null,
-    foreign key (vtName) references vehicleType,
+    vid      integer       not null PRIMARY KEY,
+    vlicense varchar(10)   not null,
+    make     varchar(20)   not null,
+    model    varchar(20)   not null,
+    year     number(4, 0)  not null,
+    color    varchar(10)   not null,
+    odometer number(10, 2) not null,
+    status   char(8)       not null,
+    vtname   varchar(20)   not null,
+    location varchar(20)   not null,
+    city     varchar(20)   not null,
+    foreign key (vtname) references vehicleType,
     foreign key (location, city) references branch,
-    constraint CHK_status check (status='for_rent' OR status='for_sale'  )
+    constraint CHK_status check (status = 'for_rent' OR status = 'for_sale' )
 );
 
 create table branch
 (
-    location char(20),
-    city char(20),
+    location varchar(20),
+    city     varchar(20),
     PRIMARY KEY (location, city)
 );
 
 create table equipment
 (
-    eid integer not null PRIMARY KEY,
-    etname char(20) not null,
-    status char(13) not null,
-    location char(20) not null,
-    city char(20) not null,
+    eid      integer     not null PRIMARY KEY,
+    etname   varchar(20) not null,
+    status   varchar(13) not null,
+    location varchar(20) not null,
+    city     varchar(20) not null,
     foreign key (location, city) references branch,
     foreign key (etname) references equipType,
-    constraint CHK_status check (status='available' OR status='rented' OR status='not_available')
+    constraint CHK_status check (status = 'available' OR status = 'rented' OR status = 'not_available')
 );
 
 create table equipType
 (
-    etname char(20) not null PRIMARY KEY,
-    drate number(10,2) not null,
-    hrate number(10,2) not null
+    etname varchar(20)   not null PRIMARY KEY,
+    drate  number(10, 2) not null,
+    hrate  number(10, 2) not null
+);
+
+create table EForV
+(
+    etname varchar(20) not null,
+    vtname varchar(20) not null,
+    PRIMARY KEY (etname, vtname),
+    foreign key (etname) references equipType,
+    foreign key (vtname) references vehicleType
+);
+
+create table return
+(
+    rental_rid  char(6)       not null PRIMARY KEY,
+    return_date date          not null,
+    return_time time          not null,
+    fulltank    char(1)       not null, /*1 = true, 0 = false*/
+    value       number(10, 20 not null,
+    foreign key (rental_rid) references rental
+);
+
+create table timePeriod
+(
+    fromDate date not null,
+    fromTime time not null,
+    toDate   date not null,
+    toTime   time not null,
+    PRIMARY KEY (fromDate, fromTime, toDate, toTime)
 );
 
 /* TODO, still just example tables
