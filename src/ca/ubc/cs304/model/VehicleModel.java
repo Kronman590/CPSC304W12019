@@ -15,13 +15,13 @@ public class VehicleModel {
 	private final String location;
 	private final String city;
 
-	public VehicleModel(String vlicense, String make, String model, int year, String color, int odometer,
+	public VehicleModel(String vlicense, VehicleDetailsModel details, int odometer,
 						String status, VehicleTypeModel vtype, String location, String city) {
 		this.vlicense = vlicense;
-		this.make = make;
-		this.model = model;
-		this.year = year;
-		this.color = color;
+		this.make = details.getMake();
+		this.model = details.getModel();
+		this.year = details.getYear();
+		this.color = details.getColor();
 		this.odometer = odometer;
 		this.status = status;
 		this.vtname = vtype.getVtname();
