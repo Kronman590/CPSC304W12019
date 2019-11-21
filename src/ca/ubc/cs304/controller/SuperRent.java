@@ -11,14 +11,23 @@ import ca.ubc.cs304.ui.TerminalTransactions;
  * This is the main controller class that will orchestrate everything.
  * ssh -l jw97 -L localhost:1522:dbhost.students.cs.ubc.ca:1522 remote.students.cs.ubc.ca
  */
-public class Bank implements LoginWindowDelegate, TerminalTransactionsDelegate {
+public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	private DatabaseConnectionHandler dbHandler = null;
 	private LoginWindow loginWindow = null;
 
-	public Bank() {
+	public SuperRent() {
 		dbHandler = new DatabaseConnectionHandler();
 	}
-	
+
+	/**
+	 * Main method called at launch time
+	 */
+	public static void main(String args[]) {
+		SuperRent bank = new SuperRent();
+		bank.start();
+	}
+
+
 	private void start() {
 		loginWindow = new LoginWindow();
 		loginWindow.showFrame(this);
@@ -48,65 +57,7 @@ public class Bank implements LoginWindowDelegate, TerminalTransactionsDelegate {
 			}
 		}
 	}
-	
-	/**
-	 * TermainalTransactionsDelegate Implementation
-	 * 
-	 * Insert a branch with the given info
-	 */
-    public void insertBranch(BranchModel model) {
-    	dbHandler.insertBranch(model);
-    }
 
-    /**
-	 * TermainalTransactionsDelegate Implementation
-	 * 
-	 * Delete branch with given branch ID.
-	 */ 
-    public void deleteBranch(int branchId) {
-    	dbHandler.deleteBranch(branchId);
-    }
-    
-    /**
-	 * TermainalTransactionsDelegate Implementation
-	 * 
-	 * Update the branch name for a specific ID
-	 */
-
-    public void updateBranch(int branchId, String name) {
-    	dbHandler.updateBranch(branchId, name);
-    }
-
-    /**
-	 * TermainalTransactionsDelegate Implementation
-	 * 
-	 * Displays information about varies bank branches.
-	 */
-    public void showBranch() {
-    	BranchModel[] models = dbHandler.getBranchInfo();
-    	
-    	for (int i = 0; i < models.length; i++) {
-    		BranchModel model = models[i];
-    		
-    		// simplified output formatting; truncation may occur
-    		System.out.printf("%-10.10s", model.getId());
-    		System.out.printf("%-20.20s", model.getName());
-    		if (model.getLocation() == null) {
-    			System.out.printf("%-20.20s", " ");
-    		} else {
-    			System.out.printf("%-20.20s", model.getLocation());
-    		}
-    		System.out.printf("%-15.15s", model.getCity());
-    		if (model.getPhoneNumber() == 0) {
-    			System.out.printf("%-15.15s", " ");
-    		} else {
-    			System.out.printf("%-15.15s", model.getPhoneNumber());
-    		}
-    		
-    		System.out.println();
-    	}
-    }
-	
     /**
 	 * TerminalTransactionsDelegate Implementation
 	 * 
@@ -119,12 +70,5 @@ public class Bank implements LoginWindowDelegate, TerminalTransactionsDelegate {
     	
     	System.exit(0);
     }
-    
-	/**
-	 * Main method called at launch time
-	 */
-	public static void main(String args[]) {
-		Bank bank = new Bank();
-		bank.start();
-	}
+
 }
