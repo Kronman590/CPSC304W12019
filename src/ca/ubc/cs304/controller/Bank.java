@@ -9,6 +9,7 @@ import ca.ubc.cs304.ui.TerminalTransactions;
 
 /**
  * This is the main controller class that will orchestrate everything.
+ * ssh -l jw97 -L localhost:1522:dbhost.students.cs.ubc.ca:1522 remote.students.cs.ubc.ca
  */
 public class Bank implements LoginWindowDelegate, TerminalTransactionsDelegate {
 	private DatabaseConnectionHandler dbHandler = null;
