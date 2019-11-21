@@ -13,10 +13,10 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CustomerOperations {
+public class CustomerHandler {
     private static final String EXCEPTION_TAG = "[EXCEPTION]";
 
-    public CustomerOperations() {
+    public CustomerHandler() {
     }
 
     public void insertCustomer(Connection connection, CustomerModel model) {

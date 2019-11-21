@@ -64,7 +64,7 @@ public class DatabaseConnectionHandler {
 			PreparedStatement ps = connection.prepareStatement("INSERT INTO branch VALUES (?,?,?,?,?)");
 			ps.setInt(1, model.getId());
 			ps.setString(2, model.getName());
-			ps.setString(3, model.getAddress());
+			ps.setString(3, model.getLocation());
 			ps.setString(4, model.getCity());
 			if (model.getPhoneNumber() == 0) {
 				ps.setNull(5, java.sql.Types.INTEGER);
