@@ -1,54 +1,3 @@
-create table reservation
-(
-    res_confNo         char(10)   not null PRIMARY KEY,
-    vtname			   varchar(9) not null,
-    dlicense		   varchar(20)not null,
-    rental_fromDate    date       not null,
-    rental_fromTime    time       not null,
-    rental_toDate      date       not null,
-    rental_toTime      time       not null,
-    foreign key (vtname) references vehicleType,
-    foreign key (dlicense) references customer,
-    foreign key (rental_fromDate, rental_fromTime, rental_toDate, rental_toTime) references rental
-);
-
--- create table reserveIncludes
--- (
---     res_confno char(10) not null,
---     etname     char(20) not null,
---     PRIMARY KEY (res_confno, etname),
---     foreign key (res_confno) references reservation,
---     foreign key (etname) references equipType
--- );
-
-create table rental
-(
-    rental_rid         char(6)     not null PRIMARY KEY,
-    vlicense           varchar(10) not null,
-    dlicense	       varchar(20) not null,
-    rental_fromDate    date        not null,
-    rental_fromTime    time        not null,
-    rental_toDate      date        not null,
-    rental_toTime      time        not null,
-    rental_odometer    int         not null,
-    rental_cardName    varchar(20) not null,
-    rental_cardNo      char(16)    not null,
-    rental_ExpDate     char(4)     not null,
-    res_confNo         char(10),
-    foreign key (vlicense) references vehicle,
-    foreign key (dlicense) references customer,
-    foreign key (res_confNo) references reservation
-);
-
--- create table rentIncludes
--- (
---     rental_rid char(6) not null,
---     eid        integer not null,
---     PRIMARY KEY (rental_rid, eid),
---     foreign key (rental_rid) references rental,
---     foreign key (eid) references equipment
--- );
-
 create table vehicleType
 (
     vtname   varchar(9)   not null PRIMARY KEY,
@@ -61,22 +10,6 @@ create table vehicleType
     wirate   number(10, 2) not null,
     krate    number(10, 2) not null
 );
-
-create table customer
-(
-    cellphone number(11)  not null,
-    name      varchar(50) not null,
-    address   varchar(50) not null,
-    dlicense  varchar(20) not null PRIMARY KEY
-);
-
--- create table clubMember
--- (
---     cellphone number(11)    not null PRIMARY KEY,
---     points    number(10, 2) not null,
---     fees      number(10, 2) not null,
---     foreign key (cellphone) references customer
--- );
 
 create table vehicle
 (
@@ -94,11 +27,78 @@ create table vehicle
     constraint CHK_status check (status = 'rented' OR status = 'maintenance' OR status = 'available')
 );
 
+create table customer
+(
+    cellphone number(11)  not null,
+    name      varchar(50) not null,
+    address   varchar(50) not null,
+    dlicense  varchar(20) not null PRIMARY KEY
+);
+
+create table reservation
+(
+    res_confNo         char(10)   not null PRIMARY KEY,
+    vtname			   varchar(9) not null,
+    dlicense		   varchar(20)not null,
+    rental_fromDate    char(10)       not null,
+    rental_fromTime    char(5)       not null,
+    rental_toDate      char(10)       not null,
+    rental_toTime      char(5)       not null,
+    foreign key (vtname) references vehicleType,
+    foreign key (dlicense) references customer
+);
+
+-- create table reserveIncludes
+-- (
+--     res_confno char(10) not null,
+--     etname     char(20) not null,
+--     PRIMARY KEY (res_confno, etname),
+--     foreign key (res_confno) references reservation,
+--     foreign key (etname) references equipType
+-- );
+
+create table rental
+(
+    rental_rid         char(6)     not null PRIMARY KEY,
+    vlicense           varchar(10) not null,
+    dlicense	       varchar(20) not null,
+    rental_fromDate    char(10)        not null,
+    rental_fromTime    char(5)        not null,
+    rental_toDate      char(10)        not null,
+    rental_toTime      char(5)        not null,
+    rental_odometer    int         not null,
+    rental_cardName    varchar(20) not null,
+    rental_cardNo      char(16)    not null,
+    rental_ExpDate     char(10)     not null,
+    res_confNo         char(10),
+    foreign key (vlicense) references vehicle,
+    foreign key (dlicense) references customer,
+    foreign key (res_confNo) references reservation
+);
+
+-- create table rentIncludes
+-- (
+--     rental_rid char(6) not null,
+--     eid        integer not null,
+--     PRIMARY KEY (rental_rid, eid),
+--     foreign key (rental_rid) references rental,
+--     foreign key (eid) references equipment
+-- );
+
+
+-- create table clubMember
+-- (
+--     cellphone number(11)    not null PRIMARY KEY,
+--     points    number(10, 2) not null,
+--     fees      number(10, 2) not null,
+--     foreign key (cellphone) references customer
+-- );
+
 create table return
 (
     rental_rid  char(6)       not null PRIMARY KEY,
-    return_date date          not null,
-    return_time time          not null,
+    return_date char(10)          not null,
+    return_time char(5)          not null,
     return_odometer int       not null,
     fulltank    char(1)       not null, /*1 = true, 0 = false*/
     value       number(10,20) not null,
