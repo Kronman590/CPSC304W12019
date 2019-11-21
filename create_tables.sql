@@ -99,6 +99,7 @@ create table return
     rental_rid  char(6)       not null PRIMARY KEY,
     return_date date          not null,
     return_time time          not null,
+    return_odometer int       not null,
     fulltank    char(1)       not null, /*1 = true, 0 = false*/
     value       number(10,20) not null,
     foreign key (rental_rid) references rental,
