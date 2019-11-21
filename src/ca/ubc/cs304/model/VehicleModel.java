@@ -16,7 +16,7 @@ public class VehicleModel {
 	private final String city;
 
 	public VehicleModel(String vlicense, String make, String model, int year, String color, int odometer,
-						String status, VehicleTypeModel vtype, BranchModel branch) {
+						String status, VehicleTypeModel vtype, String location, String city) {
 		this.vlicense = vlicense;
 		this.make = make;
 		this.model = model;
@@ -25,8 +25,8 @@ public class VehicleModel {
 		this.odometer = odometer;
 		this.status = status;
 		this.vtname = vtype.getVtname();
-		this.location = branch.getLocation();
-		this.city = branch.getCity();
+		this.location = location;
+		this.city = city;
 	}
 
 	public String getVlicense() {
