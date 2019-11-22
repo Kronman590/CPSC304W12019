@@ -64,6 +64,8 @@ public class TerminalTransactions {
 
 	private void handleCustomerOption(){
      	//TODO: initiate new class with logic
+		CustomerTransactions customerTransactions = new CustomerTransactions(bufferedReader, delegate);
+		customerTransactions.showCustomerMenu();
 	}
 
 	private void handleClerkOption(){
