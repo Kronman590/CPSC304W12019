@@ -37,31 +37,27 @@ create table customer
 
 create table reservation
 (
-    res_confNo         char(10)    not null PRIMARY KEY,
-    vtname			   varchar(20) not null,
-    dlicense		   varchar(20) not null,
-    rental_fromDate    date        not null,
-    rental_fromTime    timestamp   not null,
-    rental_toDate      date        not null,
-    rental_toTime      timestamp   not null,
+    res_confNo          char(10)    not null PRIMARY KEY,
+    vtname              varchar(20) not null,
+    dlicense            varchar(20) not null,
+    rental_fromDateTime timestamp   not null,
+    rental_toDateTime   timestamp   not null,
     foreign key (vtname) references vehicleType,
     foreign key (dlicense) references customer
 );
 
 create table rental
 (
-    rental_rid         char(6)     not null PRIMARY KEY,
-    vlicense           varchar(10) not null,
-    dlicense	       varchar(20) not null,
-    rental_fromDate    date        not null,
-    rental_fromTime    timestamp   not null,
-    rental_toDate      date        not null,
-    rental_toTime      timestamp   not null,
-    rental_odometer    int         not null,
-    rental_cardName    varchar(20) not null,
-    rental_cardNo      char(16)    not null,
-    rental_ExpDate     char(10)     not null,
-    res_confNo         char(10),
+    rental_rid          char(6)     not null PRIMARY KEY,
+    vlicense            varchar(10) not null,
+    dlicense            varchar(20) not null,
+    rental_fromDateTime timestamp   not null,
+    rental_toDateTime   timestamp   not null,
+    rental_odometer     int         not null,
+    rental_cardName     varchar(20) not null,
+    rental_cardNo       char(16)    not null,
+    rental_ExpDate      timestamp   not null,
+    res_confNo          char(10),
     foreign key (vlicense) references vehicle,
     foreign key (dlicense) references customer,
     foreign key (res_confNo) references reservation
@@ -69,14 +65,13 @@ create table rental
 
 create table return
 (
-    rental_rid  char(6)       not null PRIMARY KEY,
-    return_date date          not null,
-    return_time timestamp     not null,
-    return_odometer int       not null,
-    fulltank    char(1)       not null, /*1 = true, 0 = false*/
-    value       number(10,20) not null,
+    rental_rid      char(6)        not null PRIMARY KEY,
+    return_dateTime timestamp      not null,
+    return_odometer int            not null,
+    fulltank        char(1)        not null, /*1 = true, 0 = false*/
+    value           number(10, 20) not null,
     foreign key (rental_rid) references rental,
-    constraint CHK_fulltank check (fulltank=1 OR fulltank=0)
+    constraint CHK_fulltank check (fulltank = 1 OR fulltank = 0)
 );
 
 -- create table reserveIncludes
