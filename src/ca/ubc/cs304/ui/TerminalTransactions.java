@@ -151,7 +151,7 @@ public class TerminalTransactions {
 
 		int odometer = INVALID_INPUT;
 		while (odometer == INVALID_INPUT) {
-			System.out.print("Please enter the vehicle's odometer current value: ");
+			System.out.print("Please enter the vehicle's odometer current value (in km): ");
 			odometer = readInteger(true);
 		}
 
@@ -209,7 +209,7 @@ public class TerminalTransactions {
 
 		int odometer = INVALID_INPUT;
 		while (odometer == INVALID_INPUT) {
-			System.out.print("Please enter the vehicle's odometer returning value: ");
+			System.out.print("Please enter the vehicle's odometer returning value (in km): ");
 			odometer = readInteger(true);
 		}
 
