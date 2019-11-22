@@ -5,21 +5,22 @@ package ca.ubc.cs304.database;
 import ca.ubc.cs304.model.CustomerModel;
 import ca.ubc.cs304.model.ReservationModel;
 import ca.ubc.cs304.model.VehicleDetailsModel;
+import ca.ubc.cs304.model.VehicleTypeModel;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class CustomerHandler {
     private static final String EXCEPTION_TAG = "[EXCEPTION]";
+    private Connection connection;
 
-    public CustomerHandler() {
+    public CustomerHandler(Connection connection) {
+        this.connection = connection;
     }
 
-    public void insertCustomer(Connection connection, CustomerModel model) {
+    public void insertCustomer(CustomerModel model) {
         try {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO customer VALUES (?,?,?,?)");
             ps.setInt(1, model.getCellphone());
@@ -33,11 +34,11 @@ public class CustomerHandler {
             ps.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-            rollbackConnection(connection);
+            rollbackConnection();
         }
     }
 
-    public void insertReservation(Connection connection, ReservationModel model){
+    public void insertReservation(ReservationModel model) {
         try {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation VALUES (?, ?, ?, ?, ?, ?, ?)");
             ps.setString(1, model.getconfNo());
@@ -54,15 +55,58 @@ public class CustomerHandler {
             ps.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-            rollbackConnection(connection);
+            rollbackConnection();
         }
     }
 
-    //format: MM/DD/YYYY and HH:mm
-    public void countAvailableVehicles(Connection connection, String vtname, String location, String fromDate,
-                                       String fromTime, String toDate, String toTime) {
+    public List<VehicleTypeModel> getVehicleTypes() {
+        List<VehicleTypeModel> result = new ArrayList<>();
+        Statement stmt = null;
         try {
-            int count = 0;
+            stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM branch");
+
+            while (rs.next()) {
+                VehicleTypeModel vtm = new VehicleTypeModel(rs.getString("vtname"),
+                        rs.getString("features"),
+                        rs.getDouble("hrate"),
+                        rs.getDouble("drate"),
+                        rs.getDouble("wrate"),
+                        rs.getDouble("hirate"),
+                        rs.getDouble("dirate"),
+                        rs.getDouble("wirate"),
+                        rs.getDouble("krate"));
+                result.add(vtm);
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public List<String> getLocations() {
+        List<String> result = new ArrayList<>();
+        Statement stmt = null;
+        try {
+            stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT DISTINCT location FROM VEHICLE");
+            while(rs.next()){
+                result.add(rs.getString("location"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    //format: MM/DD/YYYY and HH:mm
+    public int countAvailableVehicles(String vtname, String location, String fromDate,
+                                       String fromTime, String toDate, String toTime) {
+        int count = 0;
+        try {
+
             //First count vehicles that have no rentals
             PreparedStatement ps1 = connection.prepareStatement(
                     "SELECT COUNT(*) " +
@@ -106,9 +150,11 @@ public class CustomerHandler {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return count;
     }
 
-    public void getAvailableVehicleDetails(Connection connection, String vtname, String location, String fromDate,
+    public void getAvailableVehicleDetails(String vtname, String location, String fromDate,
                                            String fromTime, String toDate, String toTime) {
         try {
             List<VehicleDetailsModel> vehicleDetailsList = new LinkedList<>();
@@ -152,7 +198,7 @@ public class CustomerHandler {
             }
 
             System.out.println("Details of available vehicles: ");
-            for (VehicleDetailsModel v : vehicleDetailsList){
+            for (VehicleDetailsModel v : vehicleDetailsList) {
                 System.out.println(v.toString());
             }
         } catch (SQLException e) {
@@ -160,7 +206,7 @@ public class CustomerHandler {
         }
     }
 
-    private void rollbackConnection(Connection connection) {
+    private void rollbackConnection() {
         try {
             connection.rollback();
         } catch (SQLException e) {

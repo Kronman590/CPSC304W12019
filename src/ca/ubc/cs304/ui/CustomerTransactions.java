@@ -1,9 +1,11 @@
 package ca.ubc.cs304.ui;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
+import ca.ubc.cs304.model.VehicleTypeModel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.List;
 
 public class CustomerTransactions {
     private static final String EXCEPTION_TAG = "[EXCEPTION]";
@@ -35,7 +37,47 @@ public class CustomerTransactions {
     }
 
     public void handleSearchOption(){
+        System.out.println("Select vehicle type: ");
+        List<VehicleTypeModel> vehicleTypeModels = delegate.getVehicleTypes();
+        for (int i = 0; i < vehicleTypeModels.size(); i++){
+            System.out.println((i+1) + ": " + vehicleTypeModels.get(i).getVtname());
+        }
+        int vehicleTypeChoice = INVALID_INPUT;
+        while (vehicleTypeChoice < 1 || vehicleTypeChoice > vehicleTypeModels.size() + 1){
+            System.out.print("Select a vehicle type: ");
+            vehicleTypeChoice = readInteger(false);
+        }
+        String vtname = vehicleTypeModels.get(vehicleTypeChoice-1).getVtname();
 
+        System.out.println("Select location: ");
+        List<String> locations = delegate.getLocations();
+        for (int i = 0; i < locations.size(); i++){
+            System.out.println((i+1) + ": " + locations.get(i));
+        }
+        int locationChoice = INVALID_INPUT;
+        while (locationChoice < 1 || locationChoice > locations.size()+1){
+            System.out.print("Select a location: ");
+            locationChoice = readInteger(false);
+        }
+        String location = locations.get(locationChoice-1);
+
+        System.out.print("Enter start date (MM/DD/YYYY): ");
+        String fromDate = readLine();
+        System.out.println();
+        System.out.print("Enter start time (HH:mm e.g. 17:30): ");
+        String fromTime = readLine();
+        System.out.println();
+
+        System.out.print("Enter end date (MM/DD/YYYY): ");
+        String toDate = readLine();
+        System.out.println();
+        System.out.print("Enter end time (HH:mm e.g. 17:30): ");
+        String toTime = readLine();
+        System.out.println();
+
+        int numAvailableVehicles = delegate.countAvailableVehicles(vtname, location, fromDate, fromTime, toDate, toTime);
+
+        System.out.println("Number of available vehicles: " + numAvailableVehicles);
     }
 
     public void handleReservationOption(){
@@ -60,7 +102,15 @@ public class CustomerTransactions {
         return input;
     }
 
-
+    private String readLine() {
+        String result = null;
+        try {
+            result = bufferedReader.readLine();
+        } catch (IOException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
+        return result;
+    }
 
 
 }

@@ -19,6 +19,7 @@ public class DatabaseConnectionHandler {
 	private static final String WARNING_TAG = "[WARNING]";
 	
 	private Connection connection = null;
+	private CustomerHandler customerHandler = null;
 	
 	public DatabaseConnectionHandler() {
 		try {
@@ -146,7 +147,7 @@ public class DatabaseConnectionHandler {
 	
 			connection = DriverManager.getConnection(ORACLE_URL, username, password);
 			connection.setAutoCommit(false);
-	
+			customerHandler = new CustomerHandler(connection);
 			System.out.println("\nConnected to Oracle!");
 			return true;
 		} catch (SQLException e) {
@@ -161,5 +162,9 @@ public class DatabaseConnectionHandler {
 		} catch (SQLException e) {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 		}
+	}
+
+	public CustomerHandler getCustomerHandler() {
+		return customerHandler;
 	}
 }

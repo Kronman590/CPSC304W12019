@@ -11,7 +11,7 @@ import ca.ubc.cs304.ui.TerminalTransactions;
  * This is the main controller class that will orchestrate everything.
  * ssh -l jw97 -L localhost:1522:dbhost.students.cs.ubc.ca:1522 remote.students.cs.ubc.ca
  */
-public class Bank implements LoginWindowDelegate, TerminalTransactionsDelegate {
+public class Bank implements LoginWindowDelegate{
 	private DatabaseConnectionHandler dbHandler = null;
 	private LoginWindow loginWindow = null;
 
@@ -37,7 +37,7 @@ public class Bank implements LoginWindowDelegate, TerminalTransactionsDelegate {
 			loginWindow.dispose();
 
 			TerminalTransactions transaction = new TerminalTransactions();
-			transaction.showMainMenu(this);
+			//transaction.showMainMenu(this);
 		} else {
 			loginWindow.handleLoginFailed();
 
