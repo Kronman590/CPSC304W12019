@@ -1,6 +1,6 @@
 create table vehicleType
 (
-    vtname   varchar(9)   not null PRIMARY KEY,
+    vtname   varchar(20)   not null PRIMARY KEY,
     features varchar(50)   not null,
     hrate    number(10, 2) not null,
     drate    number(10, 2) not null,
@@ -38,7 +38,7 @@ create table customer
 create table reservation
 (
     res_confNo         char(10)   not null PRIMARY KEY,
-    vtname			   varchar(9) not null,
+    vtname			   varchar(20) not null,
     dlicense		   varchar(20)not null,
     rental_fromDate    char(10)       not null,
     rental_fromTime    char(5)       not null,
