@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import ca.ubc.cs304.model.BranchModel;
 
 /**
  * This class handles all database related transactions
@@ -20,6 +19,7 @@ public class DatabaseConnectionHandler {
 	
 	private Connection connection = null;
 	private CustomerHandler customerHandler = null;
+	private ClerkHandler clerkHandler = null;
 	
 	public DatabaseConnectionHandler() {
 		try {
@@ -148,6 +148,7 @@ public class DatabaseConnectionHandler {
 			connection = DriverManager.getConnection(ORACLE_URL, username, password);
 			connection.setAutoCommit(false);
 			customerHandler = new CustomerHandler(connection);
+			clerkHandler = new ClerkHandler(connection);
 			System.out.println("\nConnected to Oracle!");
 			return true;
 		} catch (SQLException e) {
@@ -166,5 +167,9 @@ public class DatabaseConnectionHandler {
 
 	public CustomerHandler getCustomerHandler() {
 		return customerHandler;
+	}
+
+	public ClerkHandler getClerkHandler() {
+		return clerkHandler;
 	}
 }
