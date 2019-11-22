@@ -64,7 +64,7 @@ public class CustomerHandler {
         Statement stmt = null;
         try {
             stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM branch");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM VEHICLETYPE");
 
             while (rs.next()) {
                 VehicleTypeModel vtm = new VehicleTypeModel(rs.getString("vtname"),
@@ -144,8 +144,6 @@ public class CustomerHandler {
             while (rs2.next()) {
                 count += rs2.getInt(1);
             }
-
-            System.out.println("Number of available vehicles: " + count);
 
         } catch (SQLException e) {
             e.printStackTrace();

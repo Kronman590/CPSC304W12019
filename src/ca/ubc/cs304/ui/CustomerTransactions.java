@@ -33,6 +33,23 @@ public class CustomerTransactions {
             choice = readInteger(false);
 
             System.out.println(" ");
+
+            if (choice != INVALID_INPUT) {
+                switch (choice) {
+                    case 1:
+                        handleSearchOption();
+                        break;
+                    case 2:
+                        handleReservationOption();
+                        break;
+                    case 3:
+                        handleQuitOption();
+                        break;
+                    default:
+                        System.out.println(WARNING_TAG + " The number that you entered was not a valid option.");
+                        break;
+                }
+            }
         }
     }
 
@@ -82,6 +99,20 @@ public class CustomerTransactions {
 
     public void handleReservationOption(){
 
+    }
+
+    private void handleQuitOption() {
+        System.out.println("Good Bye!");
+
+        if (bufferedReader != null) {
+            try {
+                bufferedReader.close();
+            } catch (IOException e) {
+                System.out.println("IOException!");
+            }
+        }
+
+        delegate.terminalTransactionsFinished();
     }
 
     private int readInteger(boolean allowEmpty) {
