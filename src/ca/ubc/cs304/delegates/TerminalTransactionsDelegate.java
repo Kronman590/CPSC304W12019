@@ -1,6 +1,6 @@
 package ca.ubc.cs304.delegates;
+import ca.ubc.cs304.model.CreditCard;
 
-import ca.ubc.cs304.model.BranchModel;
 import ca.ubc.cs304.model.VehicleTypeModel;
 
 import java.util.List;
@@ -15,6 +15,10 @@ import java.util.List;
  * Bank is the actual class that will implement the methods.
  */
 public interface TerminalTransactionsDelegate {
+
+	void makeRental(String vlicense, String dlicense, int odometer, CreditCard card, String resID, String fromDate, String fromTime, String toDate, String toTime);
+	void returnVehicle(String rid, String retDate, String retTime, int retOdometer, boolean fullTank);
+
 	void terminalTransactionsFinished();
 
 	List<VehicleTypeModel> getVehicleTypes();
