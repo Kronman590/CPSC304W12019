@@ -1,11 +1,6 @@
 package ca.ubc.cs304.database;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
@@ -101,7 +96,7 @@ public class ClerkHandler {
 		}
 	}
 
-	public void rentVehicleNoReserve(String fromDate, String fromTime, String toDate, String toTime, String vlicense, String dlicense, int odometer, CreditCard card) { // If reservation is *not* provided
+	public void rentVehicleNoReserve(java.sql.Date fromDate, Timestamp fromTime, java.sql.Date toDate, Timestamp toTime, String vlicense, String dlicense, int odometer, CreditCard card) { // If reservation is *not* provided
 		try {
 			PreparedStatement ps = connection.prepareStatement("INSERT INTO rental VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
 			String rid = String.valueOf(rentalID);
@@ -112,10 +107,10 @@ public class ClerkHandler {
 			rentalID++;
 			ps.setString(2, vlicense);
 			ps.setString(3, dlicense);
-			ps.setString(4, fromDate);
-			ps.setString(5, fromTime);
-			ps.setString(6, toDate);
-			ps.setString(7, toTime);
+			ps.setDate(4, fromDate);
+			ps.setTimestamp(5, fromTime);
+			ps.setDate(6, toDate);
+			ps.setTimestamp(7, toTime);
 			ps.setInt(8, odometer);
 			ps.setString(9, card.getCardName());
 			ps.setString(10, card.getCardNo());
@@ -141,7 +136,7 @@ public class ClerkHandler {
 		}
 	}
 
-	public void returnVehicle(String rid, String retDate, String retTime, int retOdometer, boolean fullTank) {
+	public void returnVehicle(String rid, java.sql.Date retDate, java.sql.Timestamp retTime, int retOdometer, boolean fullTank) {
 		try {
 			boolean returnComplete = false;
 			Statement stmt = connection.createStatement();
@@ -176,8 +171,8 @@ public class ClerkHandler {
 								+ "\n Total Costs: " + totalCost);
 						PreparedStatement ps = connection.prepareStatement("INSERT INTO return VALUES (?,?,?,?,?,?)");
 						ps.setString(1, rid);
-						ps.setString(2, retDate);
-						ps.setString(3, retTime);
+						ps.setDate(2, retDate);
+						ps.setTimestamp(3, retTime);
 						ps.setInt(4, retOdometer);
 						if (fullTank) {
 							ps.setString(5, "1");

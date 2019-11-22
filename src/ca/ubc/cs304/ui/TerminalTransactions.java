@@ -3,6 +3,9 @@ package ca.ubc.cs304.ui;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
 import ca.ubc.cs304.ui.CustomerTransactions;
@@ -115,31 +118,55 @@ public class TerminalTransactions {
 
 	private void handleMakeRental() {
 		String rid = null;
-		String fromDate = null;
-		String fromTime = null;
-		String toDate = null;
-		String toTime = null;
+		Date fromDate = null;
+		Timestamp fromTime = null;
+		Date toDate = null;
+		Timestamp toTime = null;
 		while (rid == null || rid.length() <= 0) {
 			System.out.print("Is there a reservation? If so, provide the reservation ID. Else, say 'No' : ");
 			rid = readLine().trim();
 		}
 
 		if (rid.equalsIgnoreCase("no")) {
-			while (fromDate == null || rid.length() <= 0) {
+			while (fromDate == null) {
 				System.out.print("What day will the rental begin? (enter as DD/MM/YYYY): ");
-				fromDate = readLine().trim();
+				try {
+					java.util.Date tempDate = new SimpleDateFormat("DD/MM/YYYY").parse(readLine().trim());
+					fromDate = new java.sql.Date(tempDate.getTime());
+				} catch (Exception err) {
+					System.out.println("Invalid Date input. Please try again.");
+					fromDate = null;
+				}
 			}
-			while (fromTime == null || rid.length() <= 0) {
+			while (fromTime == null) {
 				System.out.print("What time will the rental begin? (enter as HH:mm): ");
-				fromTime = readLine().trim();
+				try {
+					java.util.Date tempDate = new SimpleDateFormat("HH:mm").parse(readLine().trim());
+					fromTime = new java.sql.Timestamp(tempDate.getTime());
+				} catch (Exception err) {
+					System.out.println("Invalid Time input. Please try again.");
+					fromTime = null;
+				}
 			}
-			while (toDate == null || rid.length() <= 0) {
+			while (toDate == null) {
 				System.out.print("What day will the rental end? (enter as DD/MM/YYYY) : ");
-				toDate = readLine().trim();
+				try {
+					java.util.Date tempDate = new SimpleDateFormat("DD/MM/YYYY").parse(readLine().trim());
+					toDate = new java.sql.Date(tempDate.getTime());
+				} catch (Exception err) {
+					System.out.println("Invalid Date input. Please try again.");
+					toDate = null;
+				}
 			}
-			while (toTime == null || rid.length() <= 0) {
+			while (toTime == null) {
 				System.out.print("What time will the rental begin? (enter as HH:mm) : ");
-				toTime = readLine().trim();
+				try {
+					java.util.Date tempDate = new SimpleDateFormat("HH:mm").parse(readLine().trim());
+					toTime = new java.sql.Timestamp(tempDate.getTime());
+				} catch (Exception err) {
+					System.out.println("Invalid Time input. Please try again.");
+					toTime = null;
+				}
 			}
 		}
 
@@ -147,6 +174,11 @@ public class TerminalTransactions {
 		while (vlicense == null || vlicense.length() <= 0) {
 			System.out.print("Please enter the rental vehicle's license plate: ");
 			vlicense = readLine().trim();
+		}
+
+		if (!rid.equalsIgnoreCase("no")) {
+			//if (matchesVType(vlicense, ))
+			// TODO check if vehicle license plate matches reservation vehicle type
 		}
 
 		int odometer = INVALID_INPUT;
@@ -195,16 +227,28 @@ public class TerminalTransactions {
 			rid = readLine().trim();
 		}
 
-		String retDate = null;
-		while (retDate == null || retDate.length() <= 0) {
+		Date retDate = null;
+		while (retDate == null) {
 			System.out.print("What day was the vehicle returned? (enter as DD/MM/YYYY): ");
-			retDate = readLine().trim();
+			try {
+				java.util.Date tempDate = new SimpleDateFormat("DD/MM/YYYY").parse(readLine().trim());
+				retDate = new java.sql.Date(tempDate.getTime());
+			} catch (Exception err) {
+				System.out.println("Invalid Date input. Please try again.");
+				retDate = null;
+			}
 		}
 
-		String retTime = null;
-		while (retTime == null || retTime.length() <= 0) {
+		Timestamp retTime = null;
+		while (retTime == null) {
 			System.out.print("What time was the vehicle returned? (enter as HH:mm) : ");
-			retTime = readLine().trim();
+			try {
+				java.util.Date tempDate = new SimpleDateFormat("HH:mm").parse(readLine().trim());
+				retTime = new java.sql.Timestamp(tempDate.getTime());
+			} catch (Exception err) {
+				System.out.println("Invalid Time input. Please try again.");
+				retDate = null;
+			}
 		}
 
 		int odometer = INVALID_INPUT;

@@ -1,5 +1,11 @@
 package ca.ubc.cs304.model;
 
+import oracle.sql.DATE;
+
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+
 /**
  * The intent for this class is to update/store information about a single branch
  */
@@ -7,14 +13,14 @@ public class ReservationModel {
 	private final String confNo;
 	private final String vtname;
 	private final String dlicense;
-	private final String fromDate;
-	private final String fromTime;
-	private final String toDate;
-	private final String toTime;
+	private final Date fromDate;
+	private final Timestamp fromTime;
+	private final Date toDate;
+	private final Timestamp toTime;
 
 	//for creation
 	public ReservationModel(VehicleTypeModel vtype, CustomerModel customer,
-							String fromDate, String fromTime, String toDate, String toTime) {
+							Date fromDate, Timestamp fromTime, Date toDate, Timestamp toTime) {
 		this.confNo = generateAlphaNumericString(10);
 		this.vtname = vtype.getVtname();
 		this.dlicense = customer.getDlicense();
@@ -26,8 +32,8 @@ public class ReservationModel {
 
 	//for retrieval
 	public ReservationModel(String confNo, String vtname, String dlicense,
-							String fromDate, String fromTime, String toDate,
-							String toTime) {
+							Date fromDate, Timestamp fromTime, Date toDate,
+							Timestamp toTime) {
 		this.confNo = confNo;
 		this.vtname = vtname;
 		this.dlicense = dlicense;
@@ -49,19 +55,19 @@ public class ReservationModel {
 		return dlicense;
 	}
 
-	public String getFromDate() {
+	public Date getFromDate() {
 		return fromDate;
 	}
 
-	public String getFromTime() {
+	public Timestamp getFromTime() {
 		return fromTime;
 	}
 
-	public String getToDate() {
+	public Date getToDate() {
 		return toDate;
 	}
 
-	public String getToTime() {
+	public Timestamp getToTime() {
 		return toTime;
 	}
 

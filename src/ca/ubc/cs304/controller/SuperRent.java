@@ -7,6 +7,9 @@ import ca.ubc.cs304.model.*;
 import ca.ubc.cs304.ui.LoginWindow;
 import ca.ubc.cs304.ui.TerminalTransactions;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -101,7 +104,7 @@ public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDeleg
 	 *
 	 * Make a rental with the given info
 	 */
-	public void makeRental(String vlicense, String dlicense, int odometer, CreditCard card, String resNo, String fromDate, String fromTime, String toDate, String toTime) {
+	public void makeRental(String vlicense, String dlicense, int odometer, CreditCard card, String resNo, Date fromDate, Timestamp fromTime, Date toDate, Timestamp toTime) {
 		if (resNo != null) {
 			dbHandler.getClerkHandler().rentVehicle(resNo, vlicense, dlicense, odometer, card);
 		} else {
@@ -114,7 +117,7 @@ public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDeleg
 	 *
 	 * Return a vehicle
 	 */
-	public void returnVehicle(String rid, String retDate, String retTime, int retOdometer, boolean fullTank) {
+	public void returnVehicle(String rid, Date retDate, Timestamp retTime, int retOdometer, boolean fullTank) {
 		dbHandler.getClerkHandler().returnVehicle(rid, retDate, retTime, retOdometer, fullTank);
 	}
 }
