@@ -1,6 +1,7 @@
 package ca.ubc.cs304.ui;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
+import ca.ubc.cs304.model.CustomerModel;
 import ca.ubc.cs304.model.VehicleDetailsModel;
 import ca.ubc.cs304.model.VehicleTypeModel;
 
@@ -22,9 +23,9 @@ public class CustomerTransactions {
         this.delegate = delegate;
     }
 
-    public void showCustomerMenu(){
+    public void showCustomerMenu() {
         int choice = Integer.MIN_VALUE;
-        while (choice != 3){
+        while (choice != 3) {
             System.out.println();
             System.out.println("1. Search Vehicles");
             System.out.println("2. Make a Reservation");
@@ -54,30 +55,30 @@ public class CustomerTransactions {
         }
     }
 
-    public void handleSearchOption(){
+    public void handleSearchOption() {
         System.out.println("Select vehicle type: ");
         List<VehicleTypeModel> vehicleTypeModels = delegate.getVehicleTypes();
-        for (int i = 0; i < vehicleTypeModels.size(); i++){
-            System.out.println((i+1) + ": " + vehicleTypeModels.get(i).getVtname());
+        for (int i = 0; i < vehicleTypeModels.size(); i++) {
+            System.out.println((i + 1) + ": " + vehicleTypeModels.get(i).getVtname());
         }
         int vehicleTypeChoice = INVALID_INPUT;
-        while (vehicleTypeChoice < 1 || vehicleTypeChoice > vehicleTypeModels.size() + 1){
+        while (vehicleTypeChoice < 1 || vehicleTypeChoice > vehicleTypeModels.size() + 1) {
             System.out.print("Select a vehicle type: ");
             vehicleTypeChoice = readInteger(false);
         }
-        String vtname = vehicleTypeModels.get(vehicleTypeChoice-1).getVtname();
+        String vtname = vehicleTypeModels.get(vehicleTypeChoice - 1).getVtname();
 
         System.out.println("Select location: ");
         List<String> locations = delegate.getLocations();
-        for (int i = 0; i < locations.size(); i++){
-            System.out.println((i+1) + ": " + locations.get(i));
+        for (int i = 0; i < locations.size(); i++) {
+            System.out.println((i + 1) + ": " + locations.get(i));
         }
         int locationChoice = INVALID_INPUT;
-        while (locationChoice < 1 || locationChoice > locations.size()+1){
+        while (locationChoice < 1 || locationChoice > locations.size() + 1) {
             System.out.print("Select a location: ");
             locationChoice = readInteger(false);
         }
-        String location = locations.get(locationChoice-1);
+        String location = locations.get(locationChoice - 1);
 
         System.out.print("Enter start date (MM/DD/YYYY): ");
         String fromDate = readLine();
@@ -118,7 +119,33 @@ public class CustomerTransactions {
         }
     }
 
-    public void handleReservationOption(){
+    public void handleReservationOption() {
+        String newCustomer = " ";
+        while (!(newCustomer.equalsIgnoreCase("y") || newCustomer.equals("n"))) {
+            System.out.println("Are you a new customer? (Y/N): ");
+            newCustomer = readLine();
+        }
+
+        String dlicenseForReservation = null;
+        if (newCustomer.equalsIgnoreCase("y")) {
+            System.out.print("Enter your name: ");
+            String name = readLine();
+            System.out.println();
+            System.out.print("Enter your cellphone number: ");
+            int cellphone = readInteger(false);
+            System.out.println();
+            System.out.print("Enter your address: ");
+            String address = readLine();
+            System.out.println();
+            System.out.print("Enter your driver's license number: ");
+            String dlicense = readLine();
+            dlicenseForReservation = dlicense;
+            System.out.println();
+            CustomerModel newCustomerModel = new CustomerModel(cellphone, name, address, dlicense);
+            delegate.insertCustomer(newCustomerModel);
+        }
+
+
 
     }
 

@@ -3,10 +3,7 @@ package ca.ubc.cs304.controller;
 import ca.ubc.cs304.database.DatabaseConnectionHandler;
 import ca.ubc.cs304.delegates.LoginWindowDelegate;
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
-import ca.ubc.cs304.model.BranchModel;
-import ca.ubc.cs304.model.VehicleDetailsModel;
-import ca.ubc.cs304.model.CreditCard;
-import ca.ubc.cs304.model.VehicleTypeModel;
+import ca.ubc.cs304.model.*;
 import ca.ubc.cs304.ui.LoginWindow;
 import ca.ubc.cs304.ui.TerminalTransactions;
 
@@ -94,6 +91,10 @@ public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDeleg
                                                                 String fromTime, String toDate, String toTime) {
         return dbHandler.getCustomerHandler().getAvailableVehicleDetails(vtname, location, fromDate, fromTime, toDate, toTime);
     }
+
+    public void insertCustomer(CustomerModel customerModel){
+    	dbHandler.getCustomerHandler().insertCustomer(customerModel);
+	}
 
 	/**
 	 * TermainalTransactionsDelegate Implementation

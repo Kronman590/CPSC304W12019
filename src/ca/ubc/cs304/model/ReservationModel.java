@@ -11,12 +11,26 @@ public class ReservationModel {
 	private final String fromTime;
 	private final String toDate;
 	private final String toTime;
-	
+
+	//for creation
 	public ReservationModel(VehicleTypeModel vtype, CustomerModel customer,
 							String fromDate, String fromTime, String toDate, String toTime) {
 		this.confNo = generateAlphaNumericString(10);
 		this.vtname = vtype.getVtname();
 		this.dlicense = customer.getDlicense();
+		this.fromDate = fromDate;
+		this.fromTime = fromTime;
+		this.toDate = toDate;
+		this.toTime = toTime;
+	}
+
+	//for retrieval
+	public ReservationModel(String confNo, String vtname, String dlicense,
+							String fromDate, String fromTime, String toDate,
+							String toTime) {
+		this.confNo = confNo;
+		this.vtname = vtname;
+		this.dlicense = dlicense;
 		this.fromDate = fromDate;
 		this.fromTime = fromTime;
 		this.toDate = toDate;
