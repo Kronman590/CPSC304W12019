@@ -16,7 +16,6 @@ public class ReportGenerator {
     private String datestring;
 
     public ReportGenerator() {
-        Date date = new Date();
         LocalDateTime localDate = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         datestring = localDate.format(formatter);
@@ -52,7 +51,7 @@ public class ReportGenerator {
                     "AND rental_fromDate = ?"+
                     "GROUP BY vehicle.location, vehicle.city";
             PreparedStatement ps3 = connection.prepareStatement(query3);
-            ps.setString(1, datestring);
+            ps3.setString(1, datestring);
             ResultSet rs3 = ps3.executeQuery();
             printBranchRentals(rs3);
             rs.close();
@@ -63,6 +62,63 @@ public class ReportGenerator {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void dailyBranchRental(Connection connection, String location, String city) {
+        try {
+
+            String query = "SELECT * FROM vehicle " +
+                    "WHERE vehicle.vlicense = rental.vlicense "+
+                    "AND rental_fromDate = ? AND vehicle.location = ? AND vehicle.city = ?" +
+                    "ORDER BY vehicle.vtname";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, datestring);
+            ps.setString(2, location);
+            ps.setString(3, city);
+            ResultSet rs = ps.executeQuery();
+            int rows = printResultSet(rs);
+            rs.close();
+            ps.close();
+
+            String query2 = "SELECT vtname, COUNT(*) FROM vehicle " +
+                    "WHERE vehicle.vlicense = rental.vlicense "+
+                    "AND rental_fromDate = ? AND vehicle.location = ? AND vehicle.city = ?" +
+                    "GROUP BY vehicle.vtname";
+            PreparedStatement ps2 = connection.prepareStatement(query2);
+            ps2.setString(1, datestring);
+            ps2.setString(2, location);
+            ps2.setString(3, city);
+            ResultSet rs2 = ps2.executeQuery();
+            printCategories(rs2);
+            rs2.close();
+            ps2.close();
+
+            String query3 = "SELECT location, city, COUNT(*) FROM vehicle " +
+                    "WHERE vehicle.vlicense = rental.vlicense "+
+                    "AND rental_fromDate = ? AND vehicle.location = ? AND vehicle.city = ?"+
+                    "GROUP BY vehicle.location, vehicle.city";
+            PreparedStatement ps3 = connection.prepareStatement(query3);
+            ps3.setString(1, datestring);
+            ps3.setString(2, location);
+            ps3.setString(3, city);
+            ResultSet rs3 = ps3.executeQuery();
+            printBranchRentals(rs3);
+            rs.close();
+            ps3.close();
+
+            System.out.println("There are "+rows +" new rentals.");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void dailyReturn(Connection connection) {
+        // TODO
+    }
+
+    public void dailyBranchReturn(Connection connection, String location, String city) {
+        // TODO
     }
 
     private void printBranchRentals(ResultSet rs) throws SQLException {
