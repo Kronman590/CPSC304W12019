@@ -20,6 +20,7 @@ import static java.lang.Math.floor;
 
 /**
  * This class handles all database related transactions
+ * ssh -l jw97 -L localhost:1522:dbhost.students.cs.ubc.ca:1522 remote.students.cs.ubc.ca
  */
 public class ClerkHandler {
 	private static final String ORACLE_URL = "jdbc:oracle:thin:@localhost:1522:stu";
@@ -30,14 +31,15 @@ public class ClerkHandler {
 
 	private int rentalID = 0;
 	
-	public ClerkHandler() {
-		try {
-			// Load the Oracle JDBC driver
-			// Note that the path could change for new drivers
-			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-		} catch (SQLException e) {
-			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-		}
+	public ClerkHandler(Connection connection) {
+//		try {
+//			// Load the Oracle JDBC driver
+//			// Note that the path could change for new drivers
+//			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
+//		} catch (SQLException e) {
+//			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+//		}
+		this.connection = connection;
 	}
 	
 	public void close() {
@@ -194,22 +196,22 @@ public class ClerkHandler {
 		}
 	}
 
-	public boolean login(String username, String password) {
-		try {
-			if (connection != null) {
-				connection.close();
-			}
-	
-			connection = DriverManager.getConnection(ORACLE_URL, username, password);
-			connection.setAutoCommit(false);
-	
-			System.out.println("\nConnected to Oracle!");
-			return true;
-		} catch (SQLException e) {
-			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-			return false;
-		}
-	}
+//	public boolean login(String username, String password) {
+//		try {
+//			if (connection != null) {
+//				connection.close();
+//			}
+//
+//			connection = DriverManager.getConnection(ORACLE_URL, username, password);
+//			connection.setAutoCommit(false);
+//
+//			System.out.println("\nConnected to Oracle!");
+//			return true;
+//		} catch (SQLException e) {
+//			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+//			return false;
+//		}
+//	}
 
 	private void rollbackConnection() {
 		try  {

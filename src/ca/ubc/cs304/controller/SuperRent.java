@@ -4,6 +4,7 @@ import ca.ubc.cs304.database.DatabaseConnectionHandler;
 import ca.ubc.cs304.delegates.LoginWindowDelegate;
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
 import ca.ubc.cs304.model.BranchModel;
+import ca.ubc.cs304.model.CreditCard;
 import ca.ubc.cs304.model.VehicleTypeModel;
 import ca.ubc.cs304.ui.LoginWindow;
 import ca.ubc.cs304.ui.TerminalTransactions;
@@ -86,5 +87,27 @@ public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDeleg
 									  String fromTime, String toDate, String toTime){
     	return dbHandler.getCustomerHandler().countAvailableVehicles(vtname, location, fromDate,
 				fromTime, toDate, toTime);
+	}
+
+	/**
+	 * TermainalTransactionsDelegate Implementation
+	 *
+	 * Make a rental with the given info
+	 */
+	public void makeRental(String vlicense, String dlicense, int odometer, CreditCard card, String resNo, String fromDate, String fromTime, String toDate, String toTime) {
+		if (resNo != null) {
+			dbHandler.getClerkHandler().rentVehicle(resNo, vlicense, dlicense, odometer, card);
+		} else {
+			dbHandler.getClerkHandler().rentVehicleNoReserve(fromDate, fromTime, toDate, toTime, vlicense, dlicense, odometer, card);
+		}
+	}
+
+	/**
+	 * TermainalTransactionsDelegate Implementation
+	 *
+	 * Return a vehicle
+	 */
+	public void returnVehicle(String rid, String retDate, String retTime, int retOdometer, boolean fullTank) {
+		dbHandler.getClerkHandler().returnVehicle(rid, retDate, retTime, retOdometer, fullTank);
 	}
 }
