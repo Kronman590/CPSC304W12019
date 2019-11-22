@@ -1,6 +1,7 @@
 package ca.ubc.cs304.ui;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
+import ca.ubc.cs304.model.VehicleDetailsModel;
 import ca.ubc.cs304.model.VehicleTypeModel;
 
 import java.io.BufferedReader;
@@ -95,6 +96,26 @@ public class CustomerTransactions {
         int numAvailableVehicles = delegate.countAvailableVehicles(vtname, location, fromDate, fromTime, toDate, toTime);
 
         System.out.println("Number of available vehicles: " + numAvailableVehicles);
+
+        String yesNo = " ";
+        while (!(yesNo.equalsIgnoreCase("y") || yesNo.equalsIgnoreCase("n"))) {
+            System.out.println("View details? (Y/N): ");
+            yesNo = readLine();
+            if (yesNo.equalsIgnoreCase("y")) {
+                List<VehicleDetailsModel> vehicleDetails = delegate.getAvailableVehicleDetails(vtname, location, fromDate, fromTime, toDate, toTime);
+                System.out.println("Details of available vehicles: ");
+                System.out.printf("%-15s%-15s%-15s%-15s%-15s", "MAKE", "MODEL", "YEAR", "COLOR", "VEHICLE TYPE");
+                for (VehicleDetailsModel v : vehicleDetails) {
+                    System.out.println();
+                    System.out.printf("%-15s", v.getMake());
+                    System.out.printf("%-15s", v.getModel());
+                    System.out.printf("%-15s", v.getYear());
+                    System.out.printf("%-15s", v.getColor());
+                    System.out.printf("%-15s", v.getVtname());
+                }
+                break;
+            }
+        }
     }
 
     public void handleReservationOption(){

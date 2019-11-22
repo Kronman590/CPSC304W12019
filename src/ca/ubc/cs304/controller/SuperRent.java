@@ -4,6 +4,7 @@ import ca.ubc.cs304.database.DatabaseConnectionHandler;
 import ca.ubc.cs304.delegates.LoginWindowDelegate;
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
 import ca.ubc.cs304.model.BranchModel;
+import ca.ubc.cs304.model.VehicleDetailsModel;
 import ca.ubc.cs304.model.VehicleTypeModel;
 import ca.ubc.cs304.ui.LoginWindow;
 import ca.ubc.cs304.ui.TerminalTransactions;
@@ -87,4 +88,9 @@ public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDeleg
     	return dbHandler.getCustomerHandler().countAvailableVehicles(vtname, location, fromDate,
 				fromTime, toDate, toTime);
 	}
+
+	public List<VehicleDetailsModel> getAvailableVehicleDetails(String vtname, String location, String fromDate,
+                                                                String fromTime, String toDate, String toTime) {
+        return dbHandler.getCustomerHandler().getAvailableVehicleDetails(vtname, location, fromDate, fromTime, toDate, toTime);
+    }
 }

@@ -1,6 +1,7 @@
 package ca.ubc.cs304.delegates;
 
 import ca.ubc.cs304.model.BranchModel;
+import ca.ubc.cs304.model.VehicleDetailsModel;
 import ca.ubc.cs304.model.VehicleTypeModel;
 
 import java.util.List;
@@ -23,4 +24,7 @@ public interface TerminalTransactionsDelegate {
 
 	int countAvailableVehicles(String vtname, String location, String fromDate,
 									  String fromTime, String toDate, String toTime);
+
+	List<VehicleDetailsModel> getAvailableVehicleDetails(String vtname, String location, String fromDate,
+														 String fromTime, String toDate, String toTime);
 }
