@@ -1,9 +1,6 @@
 package ca.ubc.cs304.model;
 
-import oracle.sql.DATE;
-
 import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 
 /**
@@ -13,34 +10,27 @@ public class ReservationModel {
 	private final String confNo;
 	private final String vtname;
 	private final String dlicense;
-	private final Date fromDate;
-	private final Timestamp fromTime;
-	private final Date toDate;
-	private final Timestamp toTime;
+	private final Timestamp fromDateTime;
+	private final Timestamp toDateTime;
 
 	//for creation
 	public ReservationModel(VehicleTypeModel vtype, CustomerModel customer,
-							Date fromDate, Timestamp fromTime, Date toDate, Timestamp toTime) {
+							Timestamp fromDateTime, Timestamp toDateTime) {
 		this.confNo = generateAlphaNumericString(10);
 		this.vtname = vtype.getVtname();
 		this.dlicense = customer.getDlicense();
-		this.fromDate = fromDate;
-		this.fromTime = fromTime;
-		this.toDate = toDate;
-		this.toTime = toTime;
+		this.fromDateTime = fromDateTime;
+		this.toDateTime = toDateTime;
 	}
 
 	//for retrieval
 	public ReservationModel(String confNo, String vtname, String dlicense,
-							Date fromDate, Timestamp fromTime, Date toDate,
-							Timestamp toTime) {
+							Timestamp fromDateTime, Timestamp toDateTime) {
 		this.confNo = confNo;
 		this.vtname = vtname;
 		this.dlicense = dlicense;
-		this.fromDate = fromDate;
-		this.fromTime = fromTime;
-		this.toDate = toDate;
-		this.toTime = toTime;
+		this.fromDateTime = fromDateTime;
+		this.toDateTime = toDateTime;
 	}
 
 	public String getconfNo() {
@@ -55,20 +45,12 @@ public class ReservationModel {
 		return dlicense;
 	}
 
-	public Date getFromDate() {
-		return fromDate;
+	public Timestamp getFromDateTime() {
+		return fromDateTime;
 	}
 
-	public Timestamp getFromTime() {
-		return fromTime;
-	}
-
-	public Date getToDate() {
-		return toDate;
-	}
-
-	public Timestamp getToTime() {
-		return toTime;
+	public Timestamp getToDateTime() {
+		return toDateTime;
 	}
 
 	private String generateAlphaNumericString(int n) {
