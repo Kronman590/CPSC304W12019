@@ -130,10 +130,12 @@ public class CustomerHandler {
 
             boolean isLocationEmpty = location == null || location.equals("");
             boolean isVtnameEmpty = vtname == null || vtname.equals("");
-            boolean hasTimeInterval = fromDate != null;
+            boolean hasTimeInterval = fromDate != null && !fromDate.equals("");
             String locationQuery = isLocationEmpty ? "" : "vehicle.LOCATION = ? AND ";
             String vtnameQuery = isVtnameEmpty ? "" : "vehicle.vtname = ? AND ";
             String selectStmt = isCount ? "COUNT(*) AS count " : "* ";
+            String timeIntervalQuery = hasTimeInterval ?
+                    "AND (? < rental.RENTAL_FROMDATETIME OR ? > rental.RENTAL_TODATETIME)))" : "))";
             ps = connection.prepareStatement(
                     "SELECT " + selectStmt +
                             " FROM vehicle, rental " +
@@ -143,18 +145,12 @@ public class CustomerHandler {
                             "((vehicle.VLICENSE NOT IN (SELECT rental.VLICENSE FROM rental) " +
                             "AND vehicle.STATUS = 'available') " +
                             "OR (rental.VLICENSE = vehicle.VLICENSE " +
-                            "AND (? < rental.RENTAL_FROMDATETIME " +
-                            "OR ? > rental.RENTAL_TODATETIME)))"
+                            timeIntervalQuery
             );
             int numParameters = 0;
             if (!isLocationEmpty) numParameters++;
             if (!isVtnameEmpty) numParameters++;
             if (hasTimeInterval) numParameters += 2;
-
-            String inputToDateTime = toDate + " " + toTime + ":00.00"; //date in YYYY-MM-DD and time in HH:mm
-            Timestamp toTimestamp = Timestamp.valueOf(inputToDateTime);
-            String inputFromDateTime = fromDate + " " + fromTime + ":00.00";
-            Timestamp fromTimestamp = Timestamp.valueOf(inputFromDateTime);
 
             boolean vtnameSet = false;
             boolean locationSet = false;
@@ -172,11 +168,15 @@ public class CustomerHandler {
                     continue;
                 }
                 if (hasTimeInterval && !toTimestampSet) {
+                    String inputToDateTime = toDate + " " + toTime + ":00.00"; //date in YYYY-MM-DD and time in HH:mm
+                    Timestamp toTimestamp = Timestamp.valueOf(inputToDateTime);
                     ps.setTimestamp(i, toTimestamp);
                     toTimestampSet = true;
                     continue;
                 }
                 if (hasTimeInterval && !fromTimestampSet) {
+                    String inputFromDateTime = fromDate + " " + fromTime + ":00.00";
+                    Timestamp fromTimestamp = Timestamp.valueOf(inputFromDateTime);
                     ps.setTimestamp(i, fromTimestamp);
                     fromTimestampSet = true;
                 }
