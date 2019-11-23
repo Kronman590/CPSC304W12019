@@ -104,11 +104,11 @@ public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDeleg
 	 *
 	 * Make a rental with the given info
 	 */
-	public void makeRental(String vlicense, String dlicense, int odometer, CreditCard card, String resNo, Date fromDate, Timestamp fromTime, Date toDate, Timestamp toTime) {
+	public void makeRental(String vlicense, String dlicense, int odometer, CreditCard card, String resNo, Timestamp fromDateTime, Timestamp toDateTime) {
 		if (resNo != null) {
 			dbHandler.getClerkHandler().rentVehicle(resNo, vlicense, dlicense, odometer, card);
 		} else {
-			dbHandler.getClerkHandler().rentVehicleNoReserve(fromDate, fromTime, toDate, toTime, vlicense, dlicense, odometer, card);
+			dbHandler.getClerkHandler().rentVehicleNoReserve(fromDateTime, toDateTime, vlicense, dlicense, odometer, card);
 		}
 	}
 
@@ -117,7 +117,7 @@ public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDeleg
 	 *
 	 * Return a vehicle
 	 */
-	public void returnVehicle(String rid, Date retDate, Timestamp retTime, int retOdometer, boolean fullTank) {
-		dbHandler.getClerkHandler().returnVehicle(rid, retDate, retTime, retOdometer, fullTank);
+	public void returnVehicle(String rid, Timestamp retDateTime, int retOdometer, boolean fullTank) {
+		dbHandler.getClerkHandler().returnVehicle(rid, retDateTime, retOdometer, fullTank);
 	}
 }
