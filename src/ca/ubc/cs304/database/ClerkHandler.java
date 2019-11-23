@@ -10,6 +10,7 @@ import ca.ubc.cs304.model.BranchModel;
 import ca.ubc.cs304.model.ReservationModel;
 import ca.ubc.cs304.model.VehicleModel;
 import ca.ubc.cs304.model.CreditCard;
+import ca.ubc.cs304.ui.ReportGenerator;
 
 import static java.lang.Math.floor;
 
@@ -23,6 +24,7 @@ public class ClerkHandler {
 	private static final String WARNING_TAG = "[WARNING]";
 	
 	private Connection connection = null;
+	private ReportGenerator re;
 
 	private int rentalID = 1;
 	
@@ -35,6 +37,7 @@ public class ClerkHandler {
 //			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 //		}
 		this.connection = connection;
+		re = new ReportGenerator();
 	}
 	
 	public void close() {
@@ -212,4 +215,20 @@ public class ClerkHandler {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 		}
 	}
+
+	public void dailyRental() {
+        re.dailyRental(connection);
+    }
+
+    public void dailyBranchRental(String location, String city){
+        re.dailyBranchRental(connection,location,city);
+    }
+
+    public void dailyReturn() {
+        re.dailyReturn(connection);
+    }
+
+    public void dailyBranchReturn(String location, String city) {
+        re.dailyBranchReturn(connection,location,city);
+    }
 }

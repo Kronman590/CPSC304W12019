@@ -5,6 +5,7 @@ import ca.ubc.cs304.delegates.LoginWindowDelegate;
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
 import ca.ubc.cs304.model.*;
 import ca.ubc.cs304.ui.LoginWindow;
+import ca.ubc.cs304.ui.ReportGenerator;
 import ca.ubc.cs304.ui.TerminalTransactions;
 
 import java.sql.Date;
@@ -106,7 +107,28 @@ public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDeleg
 	public void insertReservation(ReservationModel model){
     	dbHandler.getCustomerHandler().insertReservation(model);
 	}
-	/**
+
+    @Override
+    public void dailyRental() {
+        dbHandler.getClerkHandler().dailyRental();
+    }
+
+    @Override
+    public void dailyBranchRental(String location, String city) {
+        dbHandler.getClerkHandler().dailyBranchRental(location,city);
+    }
+
+    @Override
+    public void dailyReturn() {
+        dbHandler.getClerkHandler().dailyReturn();
+    }
+
+    @Override
+    public void dailyBranchReturn(String location, String city) {
+        dbHandler.getClerkHandler().dailyBranchReturn(location, city);
+    }
+
+    /**
 	 * TermainalTransactionsDelegate Implementation
 	 *
 	 * Make a rental with the given info

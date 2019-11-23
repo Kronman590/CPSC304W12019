@@ -73,6 +73,7 @@ public class TerminalTransactions {
 
 	private void handleClerkOption(){
 		int choice = INVALID_INPUT;
+		String location, city;
 
 		while (choice != 3) {
 			System.out.println();
@@ -98,13 +99,25 @@ public class TerminalTransactions {
 						handleReturnVehicle();
 						break;
 					case 3:
-						//TODO
+						delegate.dailyRental();
+						break;
 					case 4:
-						//TODO
+						System.out.println("Please enter the branch location");
+						location = readLine();
+						System.out.println("Please enter the branch city");
+						city = readLine();
+						delegate.dailyBranchRental(location, city);
+						break;
 					case 5:
-						//TODO
+						delegate.dailyReturn();
+						break;
 					case 6:
-						//TODO
+                        System.out.println("Please enter the branch location");
+                        location = readLine();
+                        System.out.println("Please enter the branch city");
+                        city = readLine();
+                        delegate.dailyBranchReturn(location, city);
+                        break;
 					case 7:
 						handleQuitOption();
 						break;
@@ -115,6 +128,7 @@ public class TerminalTransactions {
 			}
 		}
 	}
+
 
 	private void handleMakeRental() {
 		String rid = null;

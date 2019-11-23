@@ -17,7 +17,7 @@ public class ReportGenerator {
 
     public ReportGenerator() {
         LocalDateTime localDate = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         datestring = localDate.format(formatter);
     }
 
@@ -26,15 +26,15 @@ public class ReportGenerator {
 
             String query = "SELECT vehicle.vlicense, make, model, year, color, odometer, status, vtname, location, city FROM vehicle,rental " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
-                    "AND rental.rental_fromDate = ? "+
+                    "AND trunc(rental.rental_fromDateTime) = to_date(?, 'YYYY-MM-DD') "+
                     "ORDER BY location, city, vtname";
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, datestring);
             ResultSet rs = ps.executeQuery();
-//            if (!rs.isBeforeFirst()) {
-//                System.out.println("No vehicles were rented today in the whole company");
-//                return;
-//            }
+            if (!rs.isBeforeFirst()) {
+                System.out.println("No vehicles were rented today in the whole company.");
+                return;
+            }
 
             int rows = printResultSet(rs);
             rs.close();
@@ -43,7 +43,7 @@ public class ReportGenerator {
 
             String query2 = "SELECT vtname, COUNT(*) FROM vehicle,rental " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
-                    "AND rental.rental_fromDate = ?"+
+                    "AND trunc(rental.rental_fromDateTime) = to_date(?, 'YYYY-MM-DD') "+
                     "GROUP BY vehicle.vtname";
             PreparedStatement ps2 = connection.prepareStatement(query2);
             ps2.setString(1, datestring);
@@ -54,7 +54,7 @@ public class ReportGenerator {
 
             String query3 = "SELECT location, city, COUNT(*) FROM vehicle,rental " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
-                    "AND rental.rental_fromDate = ?"+
+                    "AND trunc(rental.rental_fromDateTime) = to_date(?, 'YYYY-MM-DD') "+
                     "GROUP BY vehicle.location, vehicle.city";
             PreparedStatement ps3 = connection.prepareStatement(query3);
             ps3.setString(1, datestring);
@@ -76,7 +76,7 @@ public class ReportGenerator {
 
             String query = "SELECT vehicle.vlicense, make, model, year, color, odometer, status, vtname, location, city FROM vehicle,rental " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
-                    "AND rental.rental_fromDate = ? AND vehicle.location = ? AND vehicle.city = ?" +
+                    "AND trunc(rental.rental_fromDateTime) = to_date(?, 'YYYY-MM-DD') AND vehicle.location = ? AND vehicle.city = ? " +
                     "ORDER BY vehicle.vtname";
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, datestring);
@@ -84,7 +84,7 @@ public class ReportGenerator {
             ps.setString(3, city);
             ResultSet rs = ps.executeQuery();
             if (!rs.isBeforeFirst()) {
-                System.out.println("No vehicles were rented today in the whole branch");
+                System.out.println("No vehicles were rented today in the branch.");
                 return;
             }
             int rows = printResultSet(rs);
@@ -93,7 +93,7 @@ public class ReportGenerator {
 
             String query2 = "SELECT vtname, COUNT(*) FROM vehicle, rental " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
-                    "AND rental.rental_fromDate = ? AND vehicle.location = ? AND vehicle.city = ?" +
+                    "AND DATE(rental.rental_fromDateTime) = ? AND vehicle.location = ? AND vehicle.city = ? " +
                     "GROUP BY vehicle.vtname";
             PreparedStatement ps2 = connection.prepareStatement(query2);
             ps2.setString(1, datestring);
@@ -106,7 +106,7 @@ public class ReportGenerator {
 
             String query3 = "SELECT location, city, COUNT(*) FROM vehicle,rental " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
-                    "AND rental.rental_fromDate = ? AND vehicle.location = ? AND vehicle.city = ?"+
+                    "AND trunc(rental.rental_fromDateTime) = to_date(?, 'YYYY-MM-DD') AND vehicle.location = ? AND vehicle.city = ? "+
                     "GROUP BY vehicle.location, vehicle.city";
             PreparedStatement ps3 = connection.prepareStatement(query3);
             ps3.setString(1, datestring);
@@ -128,15 +128,15 @@ public class ReportGenerator {
 
             String query = "SELECT vehicle.vlicense, make, model, year, color, odometer, status, vtname, location, city FROM vehicle,rental,return " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
-                    "AND return.return_date = ? AND return.rental_rid = rental.rental_rid "+
+                    "AND trunc(return.return_dateTime) = to_date(?, 'YYYY-MM-DD') AND return.rental_rid = rental.rental_rid "+
                     "ORDER BY location, city, vtname";
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, datestring);
             ResultSet rs = ps.executeQuery();
-//            if (!rs.isBeforeFirst()) {
-//                System.out.println("No vehicles were returned today in the whole company");
-//                return;
-//            }
+            if (!rs.isBeforeFirst()) {
+                System.out.println("No vehicles were returned today in the whole company.");
+                return;
+            }
 
             int rows = printResultSet(rs);
             rs.close();
@@ -145,7 +145,7 @@ public class ReportGenerator {
 
             String query2 = "SELECT vtname, COUNT(*), SUM(value) FROM vehicle,rental, return " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
-                    "AND return.return_date = ? AND return.rental_rid = rental.rental_rid "+
+                    "AND trunc(return.return_dateTime) = to_date(?, 'YYYY-MM-DD') AND return.rental_rid = rental.rental_rid "+
                     "GROUP BY vehicle.vtname";
             PreparedStatement ps2 = connection.prepareStatement(query2);
             ps2.setString(1, datestring);
@@ -156,7 +156,7 @@ public class ReportGenerator {
 
             String query3 = "SELECT location, city, COUNT(*), SUM(value) FROM vehicle, rental, return " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
-                    "AND return.return_date = ? AND return.rental_rid = rental.rental_rid "+
+                    "AND trunc(return.return_dateTime) = to_date(?, 'YYYY-MM-DD') AND return.rental_rid = rental.rental_rid "+
                     "GROUP BY vehicle.location, vehicle.city";
             PreparedStatement ps3 = connection.prepareStatement(query3);
             ps3.setString(1, datestring);
@@ -177,17 +177,17 @@ public class ReportGenerator {
 
             String query = "SELECT vehicle.vlicense, make, model, year, color, odometer, status, vtname, location, city FROM vehicle,rental,return " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
-                    "AND return.return_date = ? AND return.rental_rid = rental.rental_rid AND vehicle.location = ? AND vehicle.city = ? "+
+                    "AND trunc(return.return_dateTime) = to_date(?, 'YYYY-MM-DD') AND return.rental_rid = rental.rental_rid AND vehicle.location = ? AND vehicle.city = ? "+
                     "ORDER BY location, city, vtname";
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, datestring);
             ps.setString(2, location);
             ps.setString(3, city);
             ResultSet rs = ps.executeQuery();
-//            if (!rs.isBeforeFirst()) {
-//                System.out.println("No vehicles were returned today in the whole company");
-//                return;
-//            }
+            if (!rs.isBeforeFirst()) {
+                System.out.println("No vehicles were returned today in the branch.");
+                return;
+            }
 
             int rows = printResultSet(rs);
             rs.close();
@@ -196,7 +196,7 @@ public class ReportGenerator {
 
             String query2 = "SELECT vtname, COUNT(*), SUM(value) FROM vehicle,rental, return " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
-                    "AND return.return_date = ? AND return.rental_rid = rental.rental_rid AND return.rental_rid = rental.rental_rid " +
+                    "AND trunc(return.return_dateTime) = to_date(?, 'YYYY-MM-DD') AND return.rental_rid = rental.rental_rid AND return.rental_rid = rental.rental_rid " +
                     "AND vehicle.location = ? AND vehicle.city = ? "+
                     "GROUP BY vehicle.vtname";
             PreparedStatement ps2 = connection.prepareStatement(query2);
@@ -210,7 +210,7 @@ public class ReportGenerator {
 
             String query3 = "SELECT location, city, COUNT(*), SUM(value) FROM vehicle, rental, return " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
-                    "AND return.return_date = ? AND return.rental_rid = rental.rental_rid AND return.rental_rid = rental.rental_rid " +
+                    "AND trunc(return.return_dateTime) = to_date(?, 'YYYY-MM-DD') AND return.rental_rid = rental.rental_rid AND return.rental_rid = rental.rental_rid " +
                     "AND vehicle.location = ? AND vehicle.city = ? "+
                     "GROUP BY vehicle.location, vehicle.city";
             PreparedStatement ps3 = connection.prepareStatement(query3);
