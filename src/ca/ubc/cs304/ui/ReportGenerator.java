@@ -23,7 +23,6 @@ public class ReportGenerator {
 
     public void dailyRental(Connection connection) {
         try {
-
             String query = "SELECT vehicle.vlicense, make, model, year, color, odometer, status, vtname, location, city FROM vehicle,rental " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
                     "AND trunc(rental.rental_fromDateTime) = to_date(?, 'YYYY-MM-DD') "+
@@ -35,8 +34,11 @@ public class ReportGenerator {
                 System.out.println("No vehicles were rented today in the whole company.");
                 return;
             }
-
+            System.out.println("The given report contains information about all the vehicles rented out during the day." + "\n" +
+                    "It provides 3 tables: a table of vehicle information, a table of total vehicles rented per category, and a table of total rentals per branch.");
+            System.out.println();
             int rows = printResultSet(rs);
+            System.out.println();
             rs.close();
             ps.close();
 
@@ -60,10 +62,13 @@ public class ReportGenerator {
             ps3.setString(1, datestring);
             ResultSet rs3 = ps3.executeQuery();
             printBranchRentals(rs3);
+            System.out.println();
             rs.close();
             ps3.close();
 
+
             printNumRentals(rows);
+            System.out.print(" in the company.\n");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -84,16 +89,20 @@ public class ReportGenerator {
             ps.setString(3, city);
             ResultSet rs = ps.executeQuery();
             if (!rs.isBeforeFirst()) {
-                System.out.println("No vehicles were rented today in the branch.");
+                System.out.println("No vehicles were rented today in this branch.");
                 return;
             }
+            System.out.println("The given report contains information about all the vehicles rented out during the day." + "\n" +
+                    "It provides 3 tables: a table of vehicle information, a table of total vehicles rented per category, and a table of total rentals per branch.");
+            System.out.println();
             int rows = printResultSet(rs);
+            System.out.println();
             rs.close();
             ps.close();
 
             String query2 = "SELECT vtname, COUNT(*) FROM vehicle, rental " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
-                    "AND DATE(rental.rental_fromDateTime) = ? AND vehicle.location = ? AND vehicle.city = ? " +
+                    "AND trunc(rental.rental_fromDateTime) = to_date(?, 'YYYY-MM-DD') AND vehicle.location = ? AND vehicle.city = ? " +
                     "GROUP BY vehicle.vtname";
             PreparedStatement ps2 = connection.prepareStatement(query2);
             ps2.setString(1, datestring);
@@ -101,6 +110,7 @@ public class ReportGenerator {
             ps2.setString(3, city);
             ResultSet rs2 = ps2.executeQuery();
             printCategories(rs2);
+            System.out.println();
             rs2.close();
             ps2.close();
 
@@ -116,7 +126,11 @@ public class ReportGenerator {
             printBranchRentals(rs3);
             rs.close();
             ps3.close();
+
+            System.out.println();
             printNumRentals(rows);
+
+            System.out.print(" in the branch.\n");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -126,7 +140,7 @@ public class ReportGenerator {
     public void dailyReturn(Connection connection) {
         try {
 
-            String query = "SELECT vehicle.vlicense, make, model, year, color, odometer, status, vtname, location, city FROM vehicle,rental,return " +
+            String query = "SELECT vehicle.vlicense, make, model, year, color, return.return_odometer AS odometer, status, vtname, location, city FROM vehicle,rental,return " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
                     "AND trunc(return.return_dateTime) = to_date(?, 'YYYY-MM-DD') AND return.rental_rid = rental.rental_rid "+
                     "ORDER BY location, city, vtname";
@@ -137,8 +151,11 @@ public class ReportGenerator {
                 System.out.println("No vehicles were returned today in the whole company.");
                 return;
             }
-
+            System.out.println("The given report contains info about vehicles returned during the day.\nIt gives three tables: a table of vehicle info, " +
+                    "a table of total returns and revenue for each vehicle category, and a table of total returns and revenue for each branch.");
+            System.out.println();
             int rows = printResultSet(rs);
+            System.out.println();
             rs.close();
             ps.close();
 
@@ -151,6 +168,7 @@ public class ReportGenerator {
             ps2.setString(1, datestring);
             ResultSet rs2 = ps2.executeQuery();
             printCategoryReturn(rs2);
+            System.out.println();
             rs2.close();
             ps2.close();
 
@@ -164,8 +182,10 @@ public class ReportGenerator {
             printBranchReturns(rs3);
             rs.close();
             ps3.close();
-
+            System.out.println();
             printNumReturns(rows);
+            System.out.print(" in the company.\n");
+
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -175,7 +195,7 @@ public class ReportGenerator {
     public void dailyBranchReturn(Connection connection, String location, String city) {
         try {
 
-            String query = "SELECT vehicle.vlicense, make, model, year, color, odometer, status, vtname, location, city FROM vehicle,rental,return " +
+            String query = "SELECT vehicle.vlicense, make, model, year, color, return.return_odometer AS odometer, status, vtname, location, city FROM vehicle,rental,return " +
                     "WHERE vehicle.vlicense = rental.vlicense "+
                     "AND trunc(return.return_dateTime) = to_date(?, 'YYYY-MM-DD') AND return.rental_rid = rental.rental_rid AND vehicle.location = ? AND vehicle.city = ? "+
                     "ORDER BY location, city, vtname";
@@ -185,11 +205,15 @@ public class ReportGenerator {
             ps.setString(3, city);
             ResultSet rs = ps.executeQuery();
             if (!rs.isBeforeFirst()) {
-                System.out.println("No vehicles were returned today in the branch.");
+                System.out.println("No vehicles were returned today in this branch.");
                 return;
             }
+            System.out.println("The given report contains info about vehicles returned during the day. \nIt gives three tables: a table of vehicle info, " +
+                    "a table of total returns and revenue for each vehicle category, and a table of total returns and revenue for each branch.");
 
+            System.out.println();
             int rows = printResultSet(rs);
+            System.out.println();
             rs.close();
             ps.close();
 
@@ -205,6 +229,7 @@ public class ReportGenerator {
             ps2.setString(3, city);
             ResultSet rs2 = ps2.executeQuery();
             printCategoryReturn(rs2);
+            System.out.println();
             rs2.close();
             ps2.close();
 
@@ -221,8 +246,9 @@ public class ReportGenerator {
             printBranchReturns(rs3);
             rs.close();
             ps3.close();
-
+            System.out.println();
             printNumReturns(rows);
+            System.out.print(" in the company.\n");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -230,19 +256,21 @@ public class ReportGenerator {
     }
 
     private void printBranchReturns(ResultSet rs) throws SQLException{
-        System.out.println(String.format("%-11s %-11s %-11s %-11s","Location", "City", "Returns", "Revenue"));
+        System.out.println(String.format("%-11s %-11s %-17s %-20s","Location", "City", "Total Returns", "Total Revenue"));
+        System.out.println(String.format("%s", "---------------------------------------------------------------"));
         while (rs.next()) {
             String location = rs.getString(1);
             String city = rs.getString(2);
             int count = rs.getInt(3);
             double revenue = rs.getDouble(4);
-            System.out.println(String.format("%-11s %-11s %-11d %-20f",location, city, count,revenue));
+            System.out.println(String.format("%-11s %-11s %-17d %-20f",location, city, count,revenue));
         }
     }
 
     private void printCategoryReturn(ResultSet rs) throws SQLException {
-        System.out.println(String.format("%-11s %-11s %-20s",
-                "Categories","Returns","Total Revenue"));
+        System.out.println(String.format("%-11s %-17s %-20s",
+                "Category","Total Returns","Total Revenue"));
+        System.out.println(String.format("%s", "--------------------------------------------------------"));
         String category;
         int returns;
         double revenue;
@@ -250,37 +278,38 @@ public class ReportGenerator {
             category = rs.getString(1);
             returns = rs.getInt(2);
             revenue = rs.getDouble(3);
-            System.out.println(String.format("%-11s %-11d %-20f",
+            System.out.println(String.format("%-11s %-17d %-20f",
                     category, returns, revenue));
         }
     }
 
     private void printNumReturns(int rows) {
         String grammar;
-        String returns="returns.";
+        String returns="returns";
         if (rows == 1) {
             grammar = "is ";
-            returns = "return.";
+            returns = "return";
         } else {
             grammar = "are ";
         }
-        System.out.println("There "+grammar+rows +" new "+returns);
+        System.out.print("There "+grammar+rows +" new "+returns);
     }
 
     private void printNumRentals(int rows) {
         String grammar;
-        String rental="rentals.";
+        String rental="rentals";
         if (rows == 1) {
             grammar = "is ";
-            rental = "rental.";
+            rental = "rental";
         } else {
             grammar = "are ";
         }
-        System.out.println("There "+grammar+rows +" new "+rental);
+        System.out.print("There "+grammar+rows +" new "+rental);
     }
 
     private void printBranchRentals(ResultSet rs) throws SQLException {
-        System.out.println(String.format("%-11s %-11s %-11s","Location", "City", "Rentals"));
+        System.out.println(String.format("%-11s %-11s %-11s","Location", "City", "Total Rentals"));
+        System.out.println(String.format("%s", "------------------------------------------"));
         while (rs.next()) {
             String location = rs.getString(1);
             String city = rs.getString(2);
@@ -289,24 +318,24 @@ public class ReportGenerator {
         }
     }
     private void printCategories(ResultSet rs2) throws SQLException {
+        System.out.println(String.format("%-11s %-11s",
+                "Category","Total Rentals"));
+        System.out.println(String.format("%s", "------------------------------"));
         int i =0;
         while (rs2.next()) {
             String category = rs2.getString(1);
             int count = rs2.getInt(2);
-            if (i ==0) {
-                System.out.print(count + " " + category + " rentals");
-                i++;
-            } else {
-                System.out.print(" , " +count + " " + category + " rentals");
-            }
+            System.out.println(String.format("%-11s %-11d",
+                    category, count));
         }
         System.out.print("\n");
     }
 
     private int printResultSet(ResultSet rs) throws SQLException {
         System.out.println(String.format("%-11s %-11s %-11s %-11s %-11s %-11s %-11s %-11s %-11s %-11s",
-                "vLicense","make","model", "year", "color", "odometer", "status", "vtname",
-                "location", "city"));
+                "License","Make","Model", "Year", "Color", "Odometer", "Status", "Vtname",
+                "Location", "City"));
+        System.out.println(String.format("%s", "-----------------------------------------------------------------------------------------------------------------------"));
         String vlicense, make, model, color, status, vtname, location, city;
         int odometer, year;
         int rows = 0;
