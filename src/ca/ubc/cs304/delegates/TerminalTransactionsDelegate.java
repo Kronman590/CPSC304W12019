@@ -26,7 +26,7 @@ public interface TerminalTransactionsDelegate {
 	List<String> getLocations();
 
 	int countAvailableVehicles(String vtname, String location, String fromDate,
-									  String fromTime, String toDate, String toTime, boolean excludeLocation);
+									  String fromTime, String toDate, String toTime);
 
 	List<VehicleDetailsModel> getAvailableVehicleDetails(String vtname, String location, String fromDate,
 														 String fromTime, String toDate, String toTime);

@@ -66,9 +66,10 @@ public class CustomerTransactions {
         int vehicleTypeChoice = INVALID_INPUT;
         while (vehicleTypeChoice < 1 || vehicleTypeChoice > vehicleTypeModels.size() + 1) {
             System.out.print("Select a vehicle type: ");
-            vehicleTypeChoice = readInteger(false);
+            vehicleTypeChoice = readInteger(true);
+            if (vehicleTypeChoice==EMPTY_INPUT) break;
         }
-        String vtname = vehicleTypeModels.get(vehicleTypeChoice - 1).getVtname();
+        String vtname = vehicleTypeChoice==EMPTY_INPUT ? "": vehicleTypeModels.get(vehicleTypeChoice - 1).getVtname();
 
         System.out.println("Select location: ");
         List<String> locations = delegate.getLocations();
@@ -78,9 +79,10 @@ public class CustomerTransactions {
         int locationChoice = INVALID_INPUT;
         while (locationChoice < 1 || locationChoice > locations.size() + 1) {
             System.out.print("Select a location: ");
-            locationChoice = readInteger(false);
+            locationChoice = readInteger(true);
+            if (locationChoice==EMPTY_INPUT) break;
         }
-        String location = locations.get(locationChoice - 1);
+        String location = locationChoice==EMPTY_INPUT ? "" : locations.get(locationChoice - 1);
 
         String fromDate = "";
         while(!isDateValid(fromDate)) {
@@ -122,7 +124,7 @@ public class CustomerTransactions {
             System.out.println();
         }
 
-        int numAvailableVehicles = delegate.countAvailableVehicles(vtname, location, fromDate, fromTime, toDate, toTime, false);
+        int numAvailableVehicles = delegate.countAvailableVehicles(vtname, location, fromDate, fromTime, toDate, toTime);
 
         System.out.println("Number of available vehicles: " + numAvailableVehicles);
 
@@ -245,7 +247,7 @@ public class CustomerTransactions {
             System.out.println();
         }
 
-        int availVehicles = delegate.countAvailableVehicles(vtname, "", fromDate, fromTime, toDate, toTime, true);
+        int availVehicles = delegate.countAvailableVehicles(vtname, "", fromDate, fromTime, toDate, toTime);
         if (availVehicles == 0) {
             System.out.println("There are no available vehicles for your requested criteria. ");
         } else {

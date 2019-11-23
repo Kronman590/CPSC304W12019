@@ -38,13 +38,13 @@ public class CustomerHandler {
         }
     }
 
-    public CustomerModel getCustomer(String dlicense){
+    public CustomerModel getCustomer(String dlicense) {
         CustomerModel customer = null;
-        try{
+        try {
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM customer WHERE customer.DLICENSE = ?");
             ps.setString(1, dlicense);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 customer = new CustomerModel(rs.getLong("cellphone"),
                         rs.getString("name"),
                         rs.getString("address"),
@@ -100,7 +100,8 @@ public class CustomerHandler {
             stmt.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-            rollbackConnection();        }
+            rollbackConnection();
+        }
         return result;
     }
 
@@ -110,7 +111,7 @@ public class CustomerHandler {
         try {
             stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT DISTINCT location FROM VEHICLE");
-            while(rs.next()){
+            while (rs.next()) {
                 result.add(rs.getString("location"));
             }
             rs.close();
@@ -121,123 +122,108 @@ public class CustomerHandler {
         return result;
     }
 
-    //format: YYYY-MM-DD and HH:mm
-    public int countAvailableVehicles(String vtname, String location, String fromDate,
-                                       String fromTime, String toDate, String toTime, boolean excludeLocation) {
-        int count = 0;
+    private PreparedStatement makeQueryAvailableVehicles(String vtname, String location, String fromDate,
+                                                        String fromTime, String toDate, String toTime, boolean isCount) {
+
+        PreparedStatement ps = null;
         try {
 
-            String locationQuery = excludeLocation ? "" : "AND vehicle.LOCATION = ? ";
-            //First count vehicles that have no rentals
-            PreparedStatement ps1 = connection.prepareStatement(
-                    "SELECT COUNT(*) " +
-                            "FROM vehicle " +
-                            "WHERE vehicle.VLICENSE NOT IN (SELECT rental.VLICENSE FROM rental) " +
-                            "AND vehicle.vtname = ? " +
+            boolean isLocationEmpty = location == null || location.equals("");
+            boolean isVtnameEmpty = vtname == null || vtname.equals("");
+            boolean hasTimeInterval = fromDate != null;
+            String locationQuery = isLocationEmpty ? "" : "vehicle.LOCATION = ? AND ";
+            String vtnameQuery = isVtnameEmpty ? "" : "vehicle.vtname = ? AND ";
+            String selectStmt = isCount ? "COUNT(*) AS count " : "* ";
+            ps = connection.prepareStatement(
+                    "SELECT " + selectStmt +
+                            " FROM vehicle, rental " +
+                            "WHERE " +
+                            vtnameQuery +
                             locationQuery +
-                            "AND vehicle.STATUS = 'available'"
-            );
-            ps1.setString(1, vtname);
-            if (!excludeLocation) ps1.setString(2, location);
-
-            ResultSet rs1 = ps1.executeQuery();
-            while (rs1.next()) {
-                count += rs1.getInt(1);
-            }
-
-            //Then count vehicles that have rentals, but are available in the requested period
-            PreparedStatement ps2 = connection.prepareStatement(
-                    "SELECT COUNT(*) " +
-                            "FROM vehicle, rental " +
-                            "WHERE rental.VLICENSE = vehicle.VLICENSE " +
-                            "AND vehicle.VTNAME = ? " +
-                            locationQuery +
+                            "((vehicle.VLICENSE NOT IN (SELECT rental.VLICENSE FROM rental) " +
+                            "AND vehicle.STATUS = 'available') " +
+                            "OR (rental.VLICENSE = vehicle.VLICENSE " +
                             "AND (? < rental.RENTAL_FROMDATETIME " +
-                            "OR ? > rental.RENTAL_TODATETIME) ");
-            ps2.setString(1, vtname);
-            if (!excludeLocation) ps2.setString(2, location);
+                            "OR ? > rental.RENTAL_TODATETIME)))"
+            );
+            int numParameters = 0;
+            if (!isLocationEmpty) numParameters++;
+            if (!isVtnameEmpty) numParameters++;
+            if (hasTimeInterval) numParameters += 2;
+
             String inputToDateTime = toDate + " " + toTime + ":00.00"; //date in YYYY-MM-DD and time in HH:mm
             Timestamp toTimestamp = Timestamp.valueOf(inputToDateTime);
-            ps2.setTimestamp(excludeLocation ? 2 : 3, toTimestamp);
             String inputFromDateTime = fromDate + " " + fromTime + ":00.00";
             Timestamp fromTimestamp = Timestamp.valueOf(inputFromDateTime);
-            ps2.setTimestamp(excludeLocation ? 3 : 4, fromTimestamp);
 
+            boolean vtnameSet = false;
+            boolean locationSet = false;
+            boolean toTimestampSet = false;
+            boolean fromTimestampSet = false;
+            for (int i = 1; i <= numParameters; i++) {
+                if (!isVtnameEmpty && !vtnameSet) {
+                    ps.setString(i, vtname);
+                    vtnameSet = true;
+                    continue;
+                }
+                if (!isLocationEmpty && !locationSet) {
+                    ps.setString(i, location);
+                    locationSet = true;
+                    continue;
+                }
+                if (hasTimeInterval && !toTimestampSet) {
+                    ps.setTimestamp(i, toTimestamp);
+                    toTimestampSet = true;
+                    continue;
+                }
+                if (hasTimeInterval && !fromTimestampSet) {
+                    ps.setTimestamp(i, fromTimestamp);
+                    fromTimestampSet = true;
+                }
 
-            ResultSet rs2 = ps2.executeQuery();
-            while (rs2.next()) {
-                count += rs2.getInt(1);
             }
-
-            rs1.close();
-            rs2.close();
-            ps1.close();
-            ps2.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
+        return ps;
+    }
 
+    //format: YYYY-MM-DD and HH:mm
+    public int countAvailableVehicles(String vtname, String location, String fromDate,
+                                      String fromTime, String toDate, String toTime) {
+        int count = 0;
+        PreparedStatement ps = makeQueryAvailableVehicles(vtname, location, fromDate, fromTime, toDate, toTime, true);
+
+        try {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                count += rs.getInt("count");
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+        }
         return count;
     }
 
     public List<VehicleDetailsModel> getAvailableVehicleDetails(String vtname, String location, String fromDate,
-                                           String fromTime, String toDate, String toTime) {
+                                                                String fromTime, String toDate, String toTime) {
+        PreparedStatement ps = makeQueryAvailableVehicles(vtname, location, fromDate, fromTime, toDate, toTime, false);
+
         List<VehicleDetailsModel> vehicleDetailsList = new LinkedList<>();
         try {
-            PreparedStatement ps1 = connection.prepareStatement(
-                    "SELECT * " +
-                            "FROM vehicle " +
-                            "WHERE vehicle.VLICENSE NOT IN (SELECT rental.VLICENSE FROM rental) " +
-                            "AND vehicle.vtname = ? " +
-                            "AND vehicle.LOCATION = ? " +
-                            "AND vehicle.STATUS = 'available'"
-            );
-            ps1.setString(1, vtname);
-            ps1.setString(2, location);
-
-            ResultSet rs1 = ps1.executeQuery();
-
-            while (rs1.next()) {
-                VehicleDetailsModel vehicleDetails = new VehicleDetailsModel(rs1.getString("make"),
-                        rs1.getString("model"),
-                        rs1.getInt("year"),
-                        rs1.getString("color"),
-                        rs1.getString("vtname"));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                VehicleDetailsModel vehicleDetails = new VehicleDetailsModel(rs.getString("make"),
+                        rs.getString("model"),
+                        rs.getInt("year"),
+                        rs.getString("color"),
+                        rs.getString("vtname"));
                 vehicleDetailsList.add(vehicleDetails);
             }
-
-
-            PreparedStatement ps2 = connection.prepareStatement(
-                    "SELECT vehicle.MAKE, vehicle.model, vehicle.year, vehicle.COLOR, vehicle.VTNAME " +
-                            "FROM vehicle, rental " +
-                            "WHERE rental.VLICENSE = vehicle.VLICENSE " +
-                            "AND vehicle.VTNAME = ? " +
-                            "AND vehicle.LOCATION = ? " +
-                            "AND (? < rental.RENTAL_FROMDATETIME " +
-                            "OR ? > rental.RENTAL_TODATETIME)");
-            ps2.setString(1, vtname);
-            ps2.setString(2, location);
-            String inputToDateTime = toDate + " " + toTime + ":00.00"; //date in YYYY-MM-DD and time in HH:mm
-            Timestamp toTimestamp = Timestamp.valueOf(inputToDateTime);
-            ps2.setTimestamp(3, toTimestamp);
-            String inputFromDateTime = fromDate + " " + fromTime + ":00.00";
-            Timestamp fromTimestamp = Timestamp.valueOf(inputFromDateTime);
-            ps2.setTimestamp(4, fromTimestamp);
-
-            ResultSet rs2 = ps2.executeQuery();
-            while (rs2.next()) {
-                VehicleDetailsModel vehicleDetails = new VehicleDetailsModel(rs2.getString("make"),
-                        rs2.getString("model"),
-                        rs2.getInt("year"),
-                        rs2.getString("color"),
-                        rs2.getString("vtname"));
-                vehicleDetailsList.add(vehicleDetails);
-            }
-
-            rs1.close();
-            rs2.close();
-            ps1.close();
-            ps2.close();
+            rs.close();
+            ps.close();
         } catch (SQLException e) {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
