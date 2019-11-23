@@ -6,6 +6,7 @@ import ca.ubc.cs304.model.CustomerModel;
 import ca.ubc.cs304.model.ReservationModel;
 import ca.ubc.cs304.model.VehicleDetailsModel;
 import ca.ubc.cs304.model.VehicleTypeModel;
+import oracle.jdbc.proxy.annotation.Pre;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -36,6 +37,25 @@ public class CustomerHandler {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
             rollbackConnection();
         }
+    }
+
+    public CustomerModel getCustomer(String dlicense){
+        CustomerModel customer = null;
+        try{
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM customer WHERE customer.DLICENSE = ?");
+            ps.setString(1, dlicense);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                customer = new CustomerModel(rs.getInt("cellphone"),
+                        rs.getString("name"),
+                        rs.getString("address"),
+                        rs.getString("dlicense"));
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            rollbackConnection();
+        }
+        return customer;
     }
 
     public void insertReservation(ReservationModel model) {

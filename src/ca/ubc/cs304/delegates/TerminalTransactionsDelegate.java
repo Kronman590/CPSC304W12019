@@ -32,4 +32,6 @@ public interface TerminalTransactionsDelegate {
 														 String fromTime, String toDate, String toTime);
 
 	void insertCustomer(CustomerModel customerModel);
+
+	CustomerModel getCustomer(String dlicense);
 }
