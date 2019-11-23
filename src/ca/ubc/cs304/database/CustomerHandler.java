@@ -130,7 +130,7 @@ public class CustomerHandler {
             boolean hasTimeInterval = fromDate != null && !fromDate.equals("");
             String locationQuery = isLocationEmpty ? "" : "vehicle.LOCATION = ? AND vehicle.CITY = ? AND ";
             String vtnameQuery = isVtnameEmpty ? "" : "vehicle.vtname = ? AND ";
-            String selectStmt = isCount ? "COUNT(*) AS count " : "* ";
+            String selectStmt = isCount ? "COUNT(DISTINCT vehicle.vlicense) AS count " : "DISTINCT make, model, year, color, vtname, location, city ";
             String timeIntervalQuery = hasTimeInterval ?
                     "AND (? < rental.RENTAL_FROMDATETIME OR ? > rental.RENTAL_TODATETIME)))" : "))";
             ps = connection.prepareStatement(
@@ -142,7 +142,7 @@ public class CustomerHandler {
                             "((vehicle.VLICENSE NOT IN (SELECT rental.VLICENSE FROM rental) " +
                             "AND vehicle.STATUS = 'available') " +
                             "OR (rental.VLICENSE = vehicle.VLICENSE " +
-                            timeIntervalQuery
+                            timeIntervalQuery + " ORDER BY vehicle.MAKE"
             );
             int numParameters = 0;
             if (!isLocationEmpty) numParameters+=2;
