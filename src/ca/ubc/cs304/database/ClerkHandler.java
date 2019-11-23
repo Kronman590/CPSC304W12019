@@ -134,6 +134,13 @@ public class ClerkHandler {
 			boolean returnComplete = false;
 			double totalCost = 0.0;
 			Statement stmt = connection.createStatement();
+			ResultSet checkRepeatID = stmt.executeQuery("SELECT * FROM return WHERE return.rental_rid = " + rid);
+			while (checkRepeatID.next()) {
+				System.out.println("***Vehicle is already returned, please select a different vehicle.***");
+				rollbackConnection();
+				return;
+			}
+			checkRepeatID.close();
 			ResultSet vtype = stmt.executeQuery("SELECT rental_fromDateTime,hrate,drate,wrate,hirate,dirate,wirate FROM vehicle,vehicleType,rental " +
 					"WHERE rental.rental_rid = " + rid + "AND vehicle.vlicense = rental.vlicense AND vehicle.vtname = vehicleType.vtname");
 			while (vtype.next()) {
@@ -158,6 +165,10 @@ public class ClerkHandler {
 			}
 			vtype.close();
 			stmt.close();
+			if (!returnComplete) {
+				System.out.println("***Return failed, input parameters invalid.***");
+				return;
+			}
 			PreparedStatement ps = connection.prepareStatement("INSERT INTO return VALUES (?,?,?,?,?)");
 			ps.setString(1, rid);
 			ps.setTimestamp(2, retDateTime);
@@ -171,9 +182,6 @@ public class ClerkHandler {
 			ps.executeUpdate();
 			connection.commit();
 			ps.close();
-			if (!returnComplete) {
-				System.out.println("Return failed, input parameters invalid.");
-			}
 		} catch (SQLException e) {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 			rollbackConnection();
