@@ -5,10 +5,15 @@ INSERT INTO VEHICLETYPE VALUES ('Convertible', 'stuff', 10.00, 20.00, 30.00, 11.
 INSERT INTO VEHICLE VALUES('ABCDEF1234', 'Toyota', 'Camry', 2014, 'blue', 92.35, 'available', 'Sedan', 'Loc1', 'City1');
 INSERT INTO VEHICLE VALUES('ABCDEF1235', 'Chevrolet', 'Tahoe', 2014, 'white', 92.35, 'available', 'SUV', 'Loc2', 'City2');
 INSERT INTO VEHICLE VALUES('ABCDEF1236', 'Nissan', 'Roadster', 2015, 'red', 92.35, 'available', 'Convertible', 'Loc3', 'City3');
-INSERT INTO VEHICLE VALUES('ABCDEF1237', 'Toyota', 'Camry', 2014, 'blue', 92.35, 'available', 'Sedan', 'Loc3', 'City3');
-INSERT INTO VEHICLE VALUES('ABCDEF1238', 'Chevrolet', 'Tahoe', 2014, 'white', 92.35, 'available', 'SUV', 'Loc2', 'City2');
-INSERT INTO VEHICLE VALUES('ABCDEF1239', 'Nissan', 'Roadster', 2015, 'red', 92.35, 'available', 'Convertible', 'Loc1', 'City1');
-
+INSERT INTO VEHICLE VALUES('ABCDEF1237', 'Toyota', 'Camry', 2014, 'green', 92.35, 'available', 'Sedan', 'Loc3', 'City3');
+INSERT INTO VEHICLE VALUES('ABCDEF1238', 'Chevrolet', 'Tahoe', 2014, 'yellow', 92.35, 'available', 'SUV', 'Loc2', 'City2');
+INSERT INTO VEHICLE VALUES('ABCDEF1239', 'Nissan', 'Roadster', 2015, 'purple', 92.35, 'available', 'Convertible', 'Loc1', 'City1');
+INSERT INTO VEHICLE VALUES('ABCDEF1240', 'Toyota', 'Camry', 2014, 'silver', 92.35, 'available', 'Sedan', 'Loc4', 'City1');
+INSERT INTO VEHICLE VALUES('ABCDEF1241', 'Chevrolet', 'Tahoe', 2014, 'black', 92.35, 'available', 'SUV', 'Loc5', 'City2');
+INSERT INTO VEHICLE VALUES('ABCDEF1242', 'Nissan', 'Roadster', 2015, 'turquoise', 92.35, 'available', 'Convertible', 'Loc6', 'City3');
+INSERT INTO VEHICLE VALUES('ABCDEF1243', 'Toyota', 'Camry', 2014, 'indigo', 92.35, 'available', 'Sedan', 'Loc6', 'City3');
+INSERT INTO VEHICLE VALUES('ABCDEF1244', 'Chevrolet', 'Tahoe', 2014, 'violet', 92.35, 'available', 'SUV', 'Loc5', 'City2');
+INSERT INTO VEHICLE VALUES('ABCDEF1245', 'Nissan', 'Roadster', 2015, 'maroon', 92.35, 'available', 'Convertible', 'Loc4', 'City1');
 
 INSERT INTO CUSTOMER VALUES(12345678912, 'John Doe', 'some address', 'A91748182K');
 INSERT INTO CUSTOMER VALUES(12345678913, 'Dohn Joe', 'some address 2', 'A12341182K');
