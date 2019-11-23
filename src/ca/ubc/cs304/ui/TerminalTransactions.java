@@ -75,7 +75,7 @@ public class TerminalTransactions {
 		int choice = INVALID_INPUT;
 		String location, city;
 
-		while (choice != 3) {
+		while (choice != 8) {
 			System.out.println();
 			System.out.println("1. Rent Vehicle");
 			System.out.println("2. Return Vehicle");
