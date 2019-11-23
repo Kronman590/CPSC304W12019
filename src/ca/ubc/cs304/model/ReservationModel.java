@@ -21,6 +21,16 @@ public class ReservationModel {
 		this.toDateTime = toDateTime;
 	}
 
+	//for creation
+	public ReservationModel(String vtname, CustomerModel customer,
+							Timestamp fromDateTime, Timestamp toDateTime) {
+		this.confNo = generateAlphaNumericString(10);
+		this.vtname = vtname;
+		this.dlicense = customer.getDlicense();
+		this.fromDateTime = fromDateTime;
+		this.toDateTime = toDateTime;
+	}
+
 	//for retrieval
 	public ReservationModel(String confNo, String vtname, String dlicense,
 							Timestamp fromDateTime, Timestamp toDateTime) {

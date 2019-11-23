@@ -4,19 +4,19 @@ package ca.ubc.cs304.model;
  * The intent for this class is to update/store information about a single branch
  */
 public class CustomerModel {
-	private final int cellphone;
+	private final long cellphone;
 	private final String name;
 	private final String address;
 	private final String dlicense;
 
-	public CustomerModel(int cellphone, String name, String address, String dlicense) {
+	public CustomerModel(long cellphone, String name, String address, String dlicense) {
 		this.cellphone = cellphone;
 		this.name = name;
 		this.address = address;
 		this.dlicense = dlicense;
 	}
 
-	public int getCellphone() {
+	public long getCellphone() {
 		return cellphone;
 	}
 

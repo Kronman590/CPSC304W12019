@@ -23,7 +23,7 @@ public class CustomerHandler {
     public void insertCustomer(CustomerModel model) {
         try {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO customer VALUES (?,?,?,?)");
-            ps.setInt(1, model.getCellphone());
+            ps.setLong(1, model.getCellphone());
             ps.setString(2, model.getName());
             ps.setString(3, model.getAddress());
             ps.setString(4, model.getDlicense());
@@ -36,6 +36,25 @@ public class CustomerHandler {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
             rollbackConnection();
         }
+    }
+
+    public CustomerModel getCustomer(String dlicense){
+        CustomerModel customer = null;
+        try{
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM customer WHERE customer.DLICENSE = ?");
+            ps.setString(1, dlicense);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                customer = new CustomerModel(rs.getLong("cellphone"),
+                        rs.getString("name"),
+                        rs.getString("address"),
+                        rs.getString("dlicense"));
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            rollbackConnection();
+        }
+        return customer;
     }
 
     public void insertReservation(ReservationModel model) {

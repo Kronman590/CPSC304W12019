@@ -99,6 +99,13 @@ public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDeleg
     	dbHandler.getCustomerHandler().insertCustomer(customerModel);
 	}
 
+	public CustomerModel getCustomer(String dlicense){
+    	return dbHandler.getCustomerHandler().getCustomer(dlicense);
+	}
+
+	public void insertReservation(ReservationModel model){
+    	dbHandler.getCustomerHandler().insertReservation(model);
+	}
 	/**
 	 * TermainalTransactionsDelegate Implementation
 	 *
