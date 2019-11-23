@@ -56,7 +56,7 @@ create table rental
     rental_odometer     int         not null,
     rental_cardName     varchar(20) not null,
     rental_cardNo       char(16)    not null,
-    rental_ExpDate      timestamp   not null,
+    rental_ExpDate      char(5)     not null,
     res_confNo          char(10),
     foreign key (vlicense) references vehicle,
     foreign key (dlicense) references customer,
@@ -69,7 +69,7 @@ create table return
     return_dateTime timestamp      not null,
     return_odometer int            not null,
     fulltank        char(1)        not null, /*1 = true, 0 = false*/
-    value           number(10, 20) not null,
+    value           number(20,10) not null,
     foreign key (rental_rid) references rental,
     constraint CHK_fulltank check (fulltank = 1 OR fulltank = 0)
 );

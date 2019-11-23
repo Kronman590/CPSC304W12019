@@ -12,16 +12,6 @@ public class ReservationModel {
 	private final Timestamp toDateTime;
 
 	//for creation
-	public ReservationModel(VehicleTypeModel vtype, CustomerModel customer,
-							Timestamp fromDateTime, Timestamp toDateTime) {
-		this.confNo = generateAlphaNumericString(10);
-		this.vtname = vtype.getVtname();
-		this.dlicense = customer.getDlicense();
-		this.fromDateTime = fromDateTime;
-		this.toDateTime = toDateTime;
-	}
-
-	//for creation
 	public ReservationModel(String vtname, CustomerModel customer,
 							Timestamp fromDateTime, Timestamp toDateTime) {
 		this.confNo = generateAlphaNumericString(10);
