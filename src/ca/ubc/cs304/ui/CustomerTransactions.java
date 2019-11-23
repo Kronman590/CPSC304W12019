@@ -59,27 +59,27 @@ public class CustomerTransactions {
     }
 
     public void handleSearchOption() {
-        System.out.println("Select vehicle type (optional): ");
+        System.out.println("Select vehicle type (press Enter or 0 if none): ");
         List<VehicleTypeModel> vehicleTypeModels = delegate.getVehicleTypes();
         for (int i = 0; i < vehicleTypeModels.size(); i++) {
             System.out.println((i + 1) + ": " + vehicleTypeModels.get(i).getVtname());
         }
         int vehicleTypeChoice = INVALID_INPUT;
         while (vehicleTypeChoice < 1 || vehicleTypeChoice > vehicleTypeModels.size() + 1) {
-            System.out.print("Select a vehicle type: ");
+            System.out.print("Select a vehicle type (press Enter or 0 if none): ");
             vehicleTypeChoice = readInteger(true);
             if (vehicleTypeChoice==EMPTY_INPUT) break;
         }
         String vtname = vehicleTypeChoice==EMPTY_INPUT ? "": vehicleTypeModels.get(vehicleTypeChoice - 1).getVtname();
 
-        System.out.println("Select location (optional): ");
+        System.out.println("Select location (press Enter or 0 if none): ");
         List<LocationCityModel> locations = delegate.getLocations();
         for (int i = 0; i < locations.size(); i++) {
             System.out.println((i+1) + ": " + locations.get(i).getLocation() + ", " + locations.get(i).getCity());
         }
         int locationChoice = INVALID_INPUT;
         while (locationChoice < 1 || locationChoice > locations.size() + 1) {
-            System.out.print("Select a location: ");
+            System.out.print("Select a location (press Enter or 0 if none): ");
             locationChoice = readInteger(true);
             if (locationChoice==EMPTY_INPUT) break;
         }
