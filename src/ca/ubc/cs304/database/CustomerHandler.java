@@ -132,14 +132,16 @@ public class CustomerHandler {
                             "WHERE rental.VLICENSE = vehicle.VLICENSE " +
                             "AND vehicle.VTNAME = ? " +
                             "AND vehicle.LOCATION = ? " +
-                            "AND (TIMESTAMP ? < rental.RENTAL_FROMDATETIME " +
-                            "OR TIMESTAMP ? > rental.RENTAL_TODATETIME) ");
+                            "AND (? < rental.RENTAL_FROMDATETIME " +
+                            "OR ? > rental.RENTAL_TODATETIME) ");
             ps2.setString(1, vtname);
             ps2.setString(2, location);
             String inputToDateTime = toDate + " " + toTime + ":00.00"; //date in YYYY-MM-DD and time in HH:mm
-            ps2.setString(3, inputToDateTime);
+            Timestamp toTimestamp = Timestamp.valueOf(inputToDateTime);
+            ps2.setTimestamp(3, toTimestamp);
             String inputFromDateTime = fromDate + " " + fromTime + ":00.00";
-            ps2.setString(4, inputFromDateTime);
+            Timestamp fromTimestamp = Timestamp.valueOf(inputFromDateTime);
+            ps2.setTimestamp(4, fromTimestamp);
 
 
             ResultSet rs2 = ps2.executeQuery();
@@ -191,14 +193,16 @@ public class CustomerHandler {
                             "WHERE rental.VLICENSE = vehicle.VLICENSE " +
                             "AND vehicle.VTNAME = ? " +
                             "AND vehicle.LOCATION = ? " +
-                            "AND (TIMESTAMP ? < rental.RENTAL_FROMDATETIME " +
-                            "OR TIMESTAMP ? > rental.RENTAL_TODATETIME)");
+                            "AND (? < rental.RENTAL_FROMDATETIME " +
+                            "OR ? > rental.RENTAL_TODATETIME)");
             ps2.setString(1, vtname);
             ps2.setString(2, location);
             String inputToDateTime = toDate + " " + toTime + ":00.00"; //date in YYYY-MM-DD and time in HH:mm
-            ps2.setString(3, inputToDateTime);
+            Timestamp toTimestamp = Timestamp.valueOf(inputToDateTime);
+            ps2.setTimestamp(3, toTimestamp);
             String inputFromDateTime = fromDate + " " + fromTime + ":00.00";
-            ps2.setString(4, inputFromDateTime);
+            Timestamp fromTimestamp = Timestamp.valueOf(inputFromDateTime);
+            ps2.setTimestamp(4, fromTimestamp);
 
             ResultSet rs2 = ps2.executeQuery();
             while (rs2.next()) {

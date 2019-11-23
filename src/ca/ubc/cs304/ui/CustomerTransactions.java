@@ -80,14 +80,14 @@ public class CustomerTransactions {
         }
         String location = locations.get(locationChoice - 1);
 
-        System.out.print("Enter start date (MM/DD/YYYY): ");
+        System.out.print("Enter start date (YYYY-MM-DD): ");
         String fromDate = readLine();
         System.out.println();
         System.out.print("Enter start time (HH:mm e.g. 17:30): ");
         String fromTime = readLine();
         System.out.println();
 
-        System.out.print("Enter end date (MM/DD/YYYY): ");
+        System.out.print("Enter end date (YYYY-MM-DD): ");
         String toDate = readLine();
         System.out.println();
         System.out.print("Enter end time (HH:mm e.g. 17:30): ");
