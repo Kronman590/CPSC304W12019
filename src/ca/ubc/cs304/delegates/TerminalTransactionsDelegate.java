@@ -34,4 +34,6 @@ public interface TerminalTransactionsDelegate {
 	void insertCustomer(CustomerModel customerModel);
 
 	CustomerModel getCustomer(String dlicense);
+
+	void insertReservation(ReservationModel model);
 }

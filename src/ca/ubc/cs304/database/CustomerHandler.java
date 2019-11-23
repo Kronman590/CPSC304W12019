@@ -6,7 +6,6 @@ import ca.ubc.cs304.model.CustomerModel;
 import ca.ubc.cs304.model.ReservationModel;
 import ca.ubc.cs304.model.VehicleDetailsModel;
 import ca.ubc.cs304.model.VehicleTypeModel;
-import oracle.jdbc.proxy.annotation.Pre;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ public class CustomerHandler {
     public void insertCustomer(CustomerModel model) {
         try {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO customer VALUES (?,?,?,?)");
-            ps.setInt(1, model.getCellphone());
+            ps.setLong(1, model.getCellphone());
             ps.setString(2, model.getName());
             ps.setString(3, model.getAddress());
             ps.setString(4, model.getDlicense());
@@ -46,7 +45,7 @@ public class CustomerHandler {
             ps.setString(1, dlicense);
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
-                customer = new CustomerModel(rs.getInt("cellphone"),
+                customer = new CustomerModel(rs.getLong("cellphone"),
                         rs.getString("name"),
                         rs.getString("address"),
                         rs.getString("dlicense"));
