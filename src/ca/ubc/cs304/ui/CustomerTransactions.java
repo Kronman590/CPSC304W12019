@@ -2,11 +2,13 @@ package ca.ubc.cs304.ui;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
 import ca.ubc.cs304.model.CustomerModel;
+import ca.ubc.cs304.model.ReservationModel;
 import ca.ubc.cs304.model.VehicleDetailsModel;
 import ca.ubc.cs304.model.VehicleTypeModel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.List;
 
 public class CustomerTransactions {
@@ -80,14 +82,14 @@ public class CustomerTransactions {
         }
         String location = locations.get(locationChoice - 1);
 
-        System.out.print("Enter start date (MM/DD/YYYY): ");
+        System.out.print("Enter start date (YYYY-MM-DD): ");
         String fromDate = readLine();
         System.out.println();
         System.out.print("Enter start time (HH:mm e.g. 17:30): ");
         String fromTime = readLine();
         System.out.println();
 
-        System.out.print("Enter end date (MM/DD/YYYY): ");
+        System.out.print("Enter end date (YYYY-MM-DD): ");
         String toDate = readLine();
         System.out.println();
         System.out.print("Enter end time (HH:mm e.g. 17:30): ");
@@ -97,6 +99,10 @@ public class CustomerTransactions {
         int numAvailableVehicles = delegate.countAvailableVehicles(vtname, location, fromDate, fromTime, toDate, toTime);
 
         System.out.println("Number of available vehicles: " + numAvailableVehicles);
+
+        if (numAvailableVehicles == 0) {
+            return;
+        }
 
         String yesNo = " ";
         while (!(yesNo.equalsIgnoreCase("y") || yesNo.equalsIgnoreCase("n"))) {
@@ -126,6 +132,8 @@ public class CustomerTransactions {
             newCustomer = readLine();
         }
 
+        CustomerModel currentCustomer = null;
+
         String dlicenseForReservation = null;
         if (newCustomer.equalsIgnoreCase("y")) {
             System.out.print("Enter your name: ");
@@ -143,10 +151,60 @@ public class CustomerTransactions {
             System.out.println();
             CustomerModel newCustomerModel = new CustomerModel(cellphone, name, address, dlicense);
             delegate.insertCustomer(newCustomerModel);
+            currentCustomer = newCustomerModel;
         }
 
+        while (dlicenseForReservation == null) {
+            System.out.print("Enter your driver's license number: ");
+            String dlicense = readLine();
+            currentCustomer= delegate.getCustomer(dlicense);
+            if (currentCustomer != null) {
+                dlicenseForReservation = dlicense;
+                System.out.println("Welcome, " + currentCustomer.getName());
+                break;
+            }
+        }
 
+        System.out.println("Select vehicle type: ");
+        List<VehicleTypeModel> vehicleTypeModels = delegate.getVehicleTypes();
+        for (int i = 0; i < vehicleTypeModels.size(); i++) {
+            System.out.println((i + 1) + ": " + vehicleTypeModels.get(i).getVtname());
+        }
+        int vehicleTypeChoice = INVALID_INPUT;
+        while (vehicleTypeChoice < 1 || vehicleTypeChoice > vehicleTypeModels.size() + 1) {
+            System.out.print("Select a vehicle type: ");
+            vehicleTypeChoice = readInteger(false);
+        }
+        String vtname = vehicleTypeModels.get(vehicleTypeChoice - 1).getVtname();
 
+        System.out.print("Enter start date (YYYY-MM-DD): ");
+        String fromDate = readLine();
+        System.out.println();
+        System.out.print("Enter start time (HH:mm e.g. 17:30): ");
+        String fromTime = readLine();
+        System.out.println();
+
+        System.out.print("Enter end date (YYYY-MM-DD): ");
+        String toDate = readLine();
+        System.out.println();
+        System.out.print("Enter end time (HH:mm e.g. 17:30): ");
+        String toTime = readLine();
+        System.out.println();
+
+        ReservationModel reservation = new ReservationModel(vtname,
+                currentCustomer,
+                Timestamp.valueOf(fromDate + " " + fromTime + ":00.00"),
+                Timestamp.valueOf(toDate + " " + toTime + ":00.00"));
+
+        delegate.insertReservation(reservation);
+
+        System.out.println("Reservation Complete!");
+        System.out.println("Reservation Details: ");
+        System.out.printf("%-20s%-20s%-20s%-20s%-20s", "CONFIRMATION NO.", "VEHICLE TYPE", "DRIVER'S LICENSE", "FROM DATE/TIME", "TO DATE/TIME");
+        System.out.println();
+        System.out.printf("%-20s%-20s%-20s%-20s%-20s", reservation.getconfNo(), reservation.getVtname(), reservation.getDlicense(), reservation.getFromDateTime().toString(), reservation.getToDateTime().toString());
+
+        //TODO: CHECK IF VEHICLES ARE AVAILABLE
     }
 
     private void handleQuitOption() {

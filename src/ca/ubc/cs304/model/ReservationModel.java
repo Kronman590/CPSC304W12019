@@ -1,4 +1,5 @@
 package ca.ubc.cs304.model;
+import java.sql.Timestamp;
 
 /**
  * The intent for this class is to update/store information about a single branch
@@ -7,34 +8,27 @@ public class ReservationModel {
 	private final String confNo;
 	private final String vtname;
 	private final String dlicense;
-	private final String fromDate;
-	private final String fromTime;
-	private final String toDate;
-	private final String toTime;
+	private final Timestamp fromDateTime;
+	private final Timestamp toDateTime;
 
 	//for creation
-	public ReservationModel(VehicleTypeModel vtype, CustomerModel customer,
-							String fromDate, String fromTime, String toDate, String toTime) {
+	public ReservationModel(String vtname, CustomerModel customer,
+							Timestamp fromDateTime, Timestamp toDateTime) {
 		this.confNo = generateAlphaNumericString(10);
-		this.vtname = vtype.getVtname();
+		this.vtname = vtname;
 		this.dlicense = customer.getDlicense();
-		this.fromDate = fromDate;
-		this.fromTime = fromTime;
-		this.toDate = toDate;
-		this.toTime = toTime;
+		this.fromDateTime = fromDateTime;
+		this.toDateTime = toDateTime;
 	}
 
 	//for retrieval
 	public ReservationModel(String confNo, String vtname, String dlicense,
-							String fromDate, String fromTime, String toDate,
-							String toTime) {
+							Timestamp fromDateTime, Timestamp toDateTime) {
 		this.confNo = confNo;
 		this.vtname = vtname;
 		this.dlicense = dlicense;
-		this.fromDate = fromDate;
-		this.fromTime = fromTime;
-		this.toDate = toDate;
-		this.toTime = toTime;
+		this.fromDateTime = fromDateTime;
+		this.toDateTime = toDateTime;
 	}
 
 	public String getconfNo() {
@@ -49,20 +43,12 @@ public class ReservationModel {
 		return dlicense;
 	}
 
-	public String getFromDate() {
-		return fromDate;
+	public Timestamp getFromDateTime() {
+		return fromDateTime;
 	}
 
-	public String getFromTime() {
-		return fromTime;
-	}
-
-	public String getToDate() {
-		return toDate;
-	}
-
-	public String getToTime() {
-		return toTime;
+	public Timestamp getToDateTime() {
+		return toDateTime;
 	}
 
 	private String generateAlphaNumericString(int n) {

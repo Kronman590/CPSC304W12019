@@ -3,6 +3,9 @@ package ca.ubc.cs304.ui;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
 import ca.ubc.cs304.ui.CustomerTransactions;
@@ -115,31 +118,33 @@ public class TerminalTransactions {
 
 	private void handleMakeRental() {
 		String rid = null;
-		String fromDate = null;
-		String fromTime = null;
-		String toDate = null;
-		String toTime = null;
+		Timestamp fromDateTime = null;
+		Timestamp toDateTime = null;
 		while (rid == null || rid.length() <= 0) {
 			System.out.print("Is there a reservation? If so, provide the reservation ID. Else, say 'No' : ");
 			rid = readLine().trim();
 		}
 
 		if (rid.equalsIgnoreCase("no")) {
-			while (fromDate == null || rid.length() <= 0) {
-				System.out.print("What day will the rental begin? (enter as DD/MM/YYYY): ");
-				fromDate = readLine().trim();
+			while (fromDateTime == null) {
+				System.out.print("When will the rental begin? (enter as YYYY-MM-DD HH:mm): ");
+				try {
+					// java.util.Date tempDate = new SimpleDateFormat("DD/MM/YYYY HH:mm").parse();
+					fromDateTime = Timestamp.valueOf(readLine()+":00.00");
+				} catch (Exception err) {
+					System.out.println("Invalid Date input. Please try again.");
+					fromDateTime = null;
+				}
 			}
-			while (fromTime == null || rid.length() <= 0) {
-				System.out.print("What time will the rental begin? (enter as HH:mm): ");
-				fromTime = readLine().trim();
-			}
-			while (toDate == null || rid.length() <= 0) {
-				System.out.print("What day will the rental end? (enter as DD/MM/YYYY) : ");
-				toDate = readLine().trim();
-			}
-			while (toTime == null || rid.length() <= 0) {
-				System.out.print("What time will the rental begin? (enter as HH:mm) : ");
-				toTime = readLine().trim();
+			while (toDateTime == null) {
+				System.out.print("When will the rental end? (enter as YYYY-MM-DD HH:mm) : ");
+				try {
+					//java.util.Date tempDate = new SimpleDateFormat("DD/MM/YYYY HH:mm").parse(readLine().trim());
+					toDateTime = Timestamp.valueOf(readLine()+":00.00");
+				} catch (Exception err) {
+					System.out.println("Invalid Date input. Please try again.");
+					toDateTime = null;
+				}
 			}
 		}
 
@@ -147,6 +152,11 @@ public class TerminalTransactions {
 		while (vlicense == null || vlicense.length() <= 0) {
 			System.out.print("Please enter the rental vehicle's license plate: ");
 			vlicense = readLine().trim();
+		}
+
+		if (!rid.equalsIgnoreCase("no")) {
+			//if (matchesVType(vlicense, ))
+			// TODO check if vehicle license plate matches reservation vehicle type
 		}
 
 		int odometer = INVALID_INPUT;
@@ -181,30 +191,28 @@ public class TerminalTransactions {
 
 		CreditCard card = new CreditCard(cardNo, cardName, cardExp);
 		if (rid.equalsIgnoreCase("no")) {
-			delegate.makeRental(vlicense, dlicense, odometer, card, null, fromDate, fromTime, toDate, toTime);
+			delegate.makeRental(vlicense, dlicense, odometer, card, null, fromDateTime, toDateTime);
 		} else {
-			delegate.makeRental(vlicense, dlicense, odometer, card, rid, fromDate, fromTime, toDate, toTime);
+			delegate.makeRental(vlicense, dlicense, odometer, card, rid, fromDateTime, toDateTime);
 		}
 	}
 
 	private void handleReturnVehicle() {
-//rid, retDate, retTime, retOdometer, fullTank
 		String rid = null;
 		while (rid == null || rid.length() <= 0) {
 			System.out.print("Please enter the rental id number: ");
 			rid = readLine().trim();
 		}
 
-		String retDate = null;
-		while (retDate == null || retDate.length() <= 0) {
-			System.out.print("What day was the vehicle returned? (enter as DD/MM/YYYY): ");
-			retDate = readLine().trim();
-		}
-
-		String retTime = null;
-		while (retTime == null || retTime.length() <= 0) {
-			System.out.print("What time was the vehicle returned? (enter as HH:mm) : ");
-			retTime = readLine().trim();
+		Timestamp retDateTime = null;
+		while (retDateTime == null) {
+			System.out.print("When was the vehicle returned? (enter as YYYY-MM-DD HH:mm): ");
+			try {
+				retDateTime = Timestamp.valueOf(readLine()+":00.00");
+			} catch (Exception err) {
+				System.out.println("Invalid Date input. Please try again.");
+				retDateTime = null;
+			}
 		}
 
 		int odometer = INVALID_INPUT;
@@ -220,7 +228,7 @@ public class TerminalTransactions {
 		}
 		boolean full = fullTank.equalsIgnoreCase("yes");
 
-		delegate.returnVehicle(rid, retDate, retTime, odometer, full);
+		delegate.returnVehicle(rid, retDateTime, odometer, full);
 	}
 
 	private void handleQuitOption() {

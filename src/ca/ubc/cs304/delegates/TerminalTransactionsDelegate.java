@@ -1,6 +1,8 @@
 package ca.ubc.cs304.delegates;
 import ca.ubc.cs304.model.*;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -14,8 +16,8 @@ import java.util.List;
  */
 public interface TerminalTransactionsDelegate {
 
-	void makeRental(String vlicense, String dlicense, int odometer, CreditCard card, String resID, String fromDate, String fromTime, String toDate, String toTime);
-	void returnVehicle(String rid, String retDate, String retTime, int retOdometer, boolean fullTank);
+	void makeRental(String vlicense, String dlicense, int odometer, CreditCard card, String resID, Timestamp fromDateTime, Timestamp toDateTime);
+	void returnVehicle(String rid, Timestamp retDateTime, int retOdometer, boolean fullTank);
 
 	void terminalTransactionsFinished();
 
@@ -30,4 +32,8 @@ public interface TerminalTransactionsDelegate {
 														 String fromTime, String toDate, String toTime);
 
 	void insertCustomer(CustomerModel customerModel);
+
+	CustomerModel getCustomer(String dlicense);
+
+	void insertReservation(ReservationModel model);
 }

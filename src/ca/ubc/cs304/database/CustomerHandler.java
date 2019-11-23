@@ -23,7 +23,7 @@ public class CustomerHandler {
     public void insertCustomer(CustomerModel model) {
         try {
             PreparedStatement ps = connection.prepareStatement("INSERT INTO customer VALUES (?,?,?,?)");
-            ps.setInt(1, model.getCellphone());
+            ps.setLong(1, model.getCellphone());
             ps.setString(2, model.getName());
             ps.setString(3, model.getAddress());
             ps.setString(4, model.getDlicense());
@@ -38,16 +38,34 @@ public class CustomerHandler {
         }
     }
 
+    public CustomerModel getCustomer(String dlicense){
+        CustomerModel customer = null;
+        try{
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM customer WHERE customer.DLICENSE = ?");
+            ps.setString(1, dlicense);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                customer = new CustomerModel(rs.getLong("cellphone"),
+                        rs.getString("name"),
+                        rs.getString("address"),
+                        rs.getString("dlicense"));
+            }
+        } catch (SQLException e) {
+            System.out.println(EXCEPTION_TAG + " " + e.getMessage());
+            rollbackConnection();
+        }
+        return customer;
+    }
+
     public void insertReservation(ReservationModel model) {
         try {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation VALUES (?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO reservation VALUES (?, ?, ?, ?, ?)");
             ps.setString(1, model.getconfNo());
             ps.setString(2, model.getVtname());
             ps.setString(3, model.getDlicense());
-            ps.setString(4, model.getFromDate());
-            ps.setString(5, model.getFromTime());
-            ps.setString(6, model.getToDate());
-            ps.setString(7, model.getToTime());
+            ps.setTimestamp(4, model.getFromDateTime());
+            ps.setTimestamp(5, model.getToDateTime());
+
 
             ps.executeUpdate();
             connection.commit();
@@ -103,7 +121,7 @@ public class CustomerHandler {
         return result;
     }
 
-    //format: MM/DD/YYYY and HH:mm
+    //format: YYYY-MM-DD and HH:mm
     public int countAvailableVehicles(String vtname, String location, String fromDate,
                                        String fromTime, String toDate, String toTime) {
         int count = 0;
@@ -133,14 +151,17 @@ public class CustomerHandler {
                             "WHERE rental.VLICENSE = vehicle.VLICENSE " +
                             "AND vehicle.VTNAME = ? " +
                             "AND vehicle.LOCATION = ? " +
-                            "AND (TO_DATE(?, 'MM/DD/YYYY HH24:MI') < TO_DATE(CONCAT(CONCAT(rental.RENTAL_FROMDATE, ' '), rental.RENTAL_FROMTIME), 'MM/DD/YYYY HH24:MI') " +
-                            "OR TO_DATE(?, 'MM/DD/YYYY HH24:MI') > TO_DATE(CONCAT(CONCAT(rental.RENTAL_TODATE, ' '), rental.RENTAL_TOTIME), 'MM/DD/YYYY HH24:MI'))");
+                            "AND (? < rental.RENTAL_FROMDATETIME " +
+                            "OR ? > rental.RENTAL_TODATETIME) ");
             ps2.setString(1, vtname);
             ps2.setString(2, location);
-            String inputFromDateTime = fromDate + " " + fromTime;
-            ps2.setString(3, inputFromDateTime);
-            String inputToDateTime = toDate + " " + toTime;
-            ps2.setString(4, inputToDateTime);
+            String inputToDateTime = toDate + " " + toTime + ":00.00"; //date in YYYY-MM-DD and time in HH:mm
+            Timestamp toTimestamp = Timestamp.valueOf(inputToDateTime);
+            ps2.setTimestamp(3, toTimestamp);
+            String inputFromDateTime = fromDate + " " + fromTime + ":00.00";
+            Timestamp fromTimestamp = Timestamp.valueOf(inputFromDateTime);
+            ps2.setTimestamp(4, fromTimestamp);
+
 
             ResultSet rs2 = ps2.executeQuery();
             while (rs2.next()) {
@@ -191,14 +212,17 @@ public class CustomerHandler {
                             "WHERE rental.VLICENSE = vehicle.VLICENSE " +
                             "AND vehicle.VTNAME = ? " +
                             "AND vehicle.LOCATION = ? " +
-                            "AND (TO_DATE(?, 'MM/DD/YYYY HH24:MI') < TO_DATE(CONCAT(CONCAT(rental.RENTAL_FROMDATE, ' '), rental.RENTAL_FROMTIME), 'MM/DD/YYYY HH24:MI') " +
-                            "OR TO_DATE(?, 'MM/DD/YYYY HH24:MI') > TO_DATE(CONCAT(CONCAT(rental.RENTAL_TODATE, ' '), rental.RENTAL_TOTIME), 'MM/DD/YYYY HH24:MI'))");
+                            "AND (? < rental.RENTAL_FROMDATETIME " +
+                            "OR ? > rental.RENTAL_TODATETIME)");
             ps2.setString(1, vtname);
             ps2.setString(2, location);
-            String inputFromDateTime = fromDate + " " + fromTime;
-            ps2.setString(3, inputFromDateTime);
-            String inputToDateTime = toDate + " " + toTime;
-            ps2.setString(4, inputToDateTime);
+            String inputToDateTime = toDate + " " + toTime + ":00.00"; //date in YYYY-MM-DD and time in HH:mm
+            Timestamp toTimestamp = Timestamp.valueOf(inputToDateTime);
+            ps2.setTimestamp(3, toTimestamp);
+            String inputFromDateTime = fromDate + " " + fromTime + ":00.00";
+            Timestamp fromTimestamp = Timestamp.valueOf(inputFromDateTime);
+            ps2.setTimestamp(4, fromTimestamp);
+
             ResultSet rs2 = ps2.executeQuery();
             while (rs2.next()) {
                 VehicleDetailsModel vehicleDetails = new VehicleDetailsModel(rs2.getString("make"),

@@ -7,6 +7,9 @@ import ca.ubc.cs304.model.*;
 import ca.ubc.cs304.ui.LoginWindow;
 import ca.ubc.cs304.ui.TerminalTransactions;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -96,16 +99,23 @@ public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDeleg
     	dbHandler.getCustomerHandler().insertCustomer(customerModel);
 	}
 
+	public CustomerModel getCustomer(String dlicense){
+    	return dbHandler.getCustomerHandler().getCustomer(dlicense);
+	}
+
+	public void insertReservation(ReservationModel model){
+    	dbHandler.getCustomerHandler().insertReservation(model);
+	}
 	/**
 	 * TermainalTransactionsDelegate Implementation
 	 *
 	 * Make a rental with the given info
 	 */
-	public void makeRental(String vlicense, String dlicense, int odometer, CreditCard card, String resNo, String fromDate, String fromTime, String toDate, String toTime) {
+	public void makeRental(String vlicense, String dlicense, int odometer, CreditCard card, String resNo, Timestamp fromDateTime, Timestamp toDateTime) {
 		if (resNo != null) {
 			dbHandler.getClerkHandler().rentVehicle(resNo, vlicense, dlicense, odometer, card);
 		} else {
-			dbHandler.getClerkHandler().rentVehicleNoReserve(fromDate, fromTime, toDate, toTime, vlicense, dlicense, odometer, card);
+			dbHandler.getClerkHandler().rentVehicleNoReserve(fromDateTime, toDateTime, vlicense, dlicense, odometer, card);
 		}
 	}
 
@@ -114,7 +124,7 @@ public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDeleg
 	 *
 	 * Return a vehicle
 	 */
-	public void returnVehicle(String rid, String retDate, String retTime, int retOdometer, boolean fullTank) {
-		dbHandler.getClerkHandler().returnVehicle(rid, retDate, retTime, retOdometer, fullTank);
+	public void returnVehicle(String rid, Timestamp retDateTime, int retOdometer, boolean fullTank) {
+		dbHandler.getClerkHandler().returnVehicle(rid, retDateTime, retOdometer, fullTank);
 	}
 }

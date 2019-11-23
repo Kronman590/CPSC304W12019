@@ -37,15 +37,41 @@ create table customer
 
 create table reservation
 (
-    res_confNo         char(10)   not null PRIMARY KEY,
-    vtname			   varchar(20) not null,
-    dlicense		   varchar(20)not null,
-    rental_fromDate    char(10)       not null,
-    rental_fromTime    char(5)       not null,
-    rental_toDate      char(10)       not null,
-    rental_toTime      char(5)       not null,
+    res_confNo          char(10)    not null PRIMARY KEY,
+    vtname              varchar(20) not null,
+    dlicense            varchar(20) not null,
+    rental_fromDateTime timestamp   not null,
+    rental_toDateTime   timestamp   not null,
     foreign key (vtname) references vehicleType,
     foreign key (dlicense) references customer
+);
+
+create table rental
+(
+    rental_rid          char(6)     not null PRIMARY KEY,
+    vlicense            varchar(10) not null,
+    dlicense            varchar(20) not null,
+    rental_fromDateTime timestamp   not null,
+    rental_toDateTime   timestamp   not null,
+    rental_odometer     int         not null,
+    rental_cardName     varchar(20) not null,
+    rental_cardNo       char(16)    not null,
+    rental_ExpDate      char(5)     not null,
+    res_confNo          char(10),
+    foreign key (vlicense) references vehicle,
+    foreign key (dlicense) references customer,
+    foreign key (res_confNo) references reservation
+);
+
+create table return
+(
+    rental_rid      char(6)        not null PRIMARY KEY,
+    return_dateTime timestamp      not null,
+    return_odometer int            not null,
+    fulltank        char(1)        not null, /*1 = true, 0 = false*/
+    value           number(20,10) not null,
+    foreign key (rental_rid) references rental,
+    constraint CHK_fulltank check (fulltank = 1 OR fulltank = 0)
 );
 
 -- create table reserveIncludes
@@ -56,25 +82,6 @@ create table reservation
 --     foreign key (res_confno) references reservation,
 --     foreign key (etname) references equipType
 -- );
-
-create table rental
-(
-    rental_rid         char(6)     not null PRIMARY KEY,
-    vlicense           varchar(10) not null,
-    dlicense	       varchar(20) not null,
-    rental_fromDate    char(10)        not null,
-    rental_fromTime    char(5)        not null,
-    rental_toDate      char(10)        not null,
-    rental_toTime      char(5)        not null,
-    rental_odometer    int         not null,
-    rental_cardName    varchar(20) not null,
-    rental_cardNo      char(16)    not null,
-    rental_ExpDate     char(10)     not null,
-    res_confNo         char(10),
-    foreign key (vlicense) references vehicle,
-    foreign key (dlicense) references customer,
-    foreign key (res_confNo) references reservation
-);
 
 -- create table rentIncludes
 -- (
@@ -93,18 +100,6 @@ create table rental
 --     fees      number(10, 2) not null,
 --     foreign key (cellphone) references customer
 -- );
-
-create table return
-(
-    rental_rid  char(6)       not null PRIMARY KEY,
-    return_date char(10)          not null,
-    return_time char(5)          not null,
-    return_odometer int       not null,
-    fulltank    char(1)       not null, /*1 = true, 0 = false*/
-    value       number(10,20) not null,
-    foreign key (rental_rid) references rental,
-    constraint CHK_fulltank check (fulltank=1 OR fulltank=0)
-);
 
 --create table branch
 --(
