@@ -58,7 +58,7 @@ public class CustomerTransactions {
     }
 
     public void handleSearchOption() {
-        System.out.println("Select vehicle type: ");
+        System.out.println("Select vehicle type (optional): ");
         List<VehicleTypeModel> vehicleTypeModels = delegate.getVehicleTypes();
         for (int i = 0; i < vehicleTypeModels.size(); i++) {
             System.out.println((i + 1) + ": " + vehicleTypeModels.get(i).getVtname());
@@ -71,7 +71,7 @@ public class CustomerTransactions {
         }
         String vtname = vehicleTypeChoice==EMPTY_INPUT ? "": vehicleTypeModels.get(vehicleTypeChoice - 1).getVtname();
 
-        System.out.println("Select location: ");
+        System.out.println("Select location (optional): ");
         List<String> locations = delegate.getLocations();
         for (int i = 0; i < locations.size(); i++) {
             System.out.println((i + 1) + ": " + locations.get(i));
