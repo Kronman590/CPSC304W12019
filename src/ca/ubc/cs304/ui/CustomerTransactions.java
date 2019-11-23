@@ -9,6 +9,9 @@ import ca.ubc.cs304.model.VehicleTypeModel;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class CustomerTransactions {
@@ -94,6 +97,7 @@ public class CustomerTransactions {
         String fromTime = "";
         String toDate = "";
         String toTime = "";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         if (ynTimeInterval.equalsIgnoreCase("y")) {
             while (!isDateValid(fromDate)) {
                 System.out.print("Enter start date (YYYY-MM-DD): ");
@@ -113,13 +117,26 @@ public class CustomerTransactions {
                 System.out.println();
             }
 
-            while (!isDateValid(toDate)) {
+            boolean endDateAfterStart = false;
+            while (!isDateValid(toDate) || !endDateAfterStart) {
                 System.out.print("Enter end date (YYYY-MM-DD): ");
                 toDate = readLine();
                 if (!isDateValid(toDate)) {
                     System.out.println("Invalid date entered. Please try again!");
+                    System.out.println();
+                    continue;
                 }
-                System.out.println();
+                try {
+                    Date startDate = sdf.parse(fromDate);
+                    Date endDate = sdf.parse(toDate);
+                    endDateAfterStart = startDate.before(endDate);
+                    if (!endDateAfterStart){
+                        System.out.println("The end date must be after the start date!");
+                    }
+                    System.out.println();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
 
             while (!isTimeValid(toTime)) {
@@ -146,6 +163,7 @@ public class CustomerTransactions {
             yesNo = readLine();
             if (yesNo.equalsIgnoreCase("y")) {
                 List<VehicleDetailsModel> vehicleDetails = delegate.getAvailableVehicleDetails(vtname, location, fromDate, fromTime, toDate, toTime);
+                System.out.println();
                 System.out.println("Details of available vehicles: ");
                 System.out.printf("%-15s%-15s%-15s%-15s%-15s", "MAKE", "MODEL", "YEAR", "COLOR", "VEHICLE TYPE");
                 for (VehicleDetailsModel v : vehicleDetails) {
@@ -156,6 +174,7 @@ public class CustomerTransactions {
                     System.out.printf("%-15s", v.getColor());
                     System.out.printf("%-15s", v.getVtname());
                 }
+                System.out.println();
                 break;
             }
         }
@@ -237,13 +256,27 @@ public class CustomerTransactions {
         }
 
         String toDate = "";
-        while(!isDateValid(toDate)) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        boolean endDateAfterStart = false;
+        while (!isDateValid(toDate) || !endDateAfterStart) {
             System.out.print("Enter end date (YYYY-MM-DD): ");
             toDate = readLine();
-            if (!isDateValid(toDate)){
+            if (!isDateValid(toDate)) {
                 System.out.println("Invalid date entered. Please try again!");
+                System.out.println();
+                continue;
             }
-            System.out.println();
+            try {
+                Date startDate = sdf.parse(fromDate);
+                Date endDate = sdf.parse(toDate);
+                endDateAfterStart = startDate.before(endDate);
+                if (!endDateAfterStart){
+                    System.out.println("The end date must be after the start date!");
+                }
+                System.out.println();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
         String toTime = "";
