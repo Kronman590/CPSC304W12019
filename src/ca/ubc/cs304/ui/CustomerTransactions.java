@@ -82,21 +82,47 @@ public class CustomerTransactions {
         }
         String location = locations.get(locationChoice - 1);
 
-        System.out.print("Enter start date (YYYY-MM-DD): ");
-        String fromDate = readLine();
-        System.out.println();
-        System.out.print("Enter start time (HH:mm e.g. 17:30): ");
-        String fromTime = readLine();
-        System.out.println();
+        String fromDate = "";
+        while(!isDateValid(fromDate)) {
+            System.out.print("Enter start date (YYYY-MM-DD): ");
+            fromDate = readLine();
+            if (!isDateValid(fromDate)){
+                System.out.println("Invalid date entered. Please try again!");
+            }
+            System.out.println();
+        }
 
-        System.out.print("Enter end date (YYYY-MM-DD): ");
-        String toDate = readLine();
-        System.out.println();
-        System.out.print("Enter end time (HH:mm e.g. 17:30): ");
-        String toTime = readLine();
-        System.out.println();
+        String fromTime = "";
+        while (!isTimeValid(fromTime)) {
+            System.out.print("Enter start time (HH:mm e.g. 17:30): ");
+            fromTime = readLine();
+            if (!isTimeValid(fromTime)){
+                System.out.println("Invalid time entered. Please try again!");
+            }
+            System.out.println();
+        }
 
-        int numAvailableVehicles = delegate.countAvailableVehicles(vtname, location, fromDate, fromTime, toDate, toTime);
+        String toDate = "";
+        while(!isDateValid(toDate)) {
+            System.out.print("Enter end date (YYYY-MM-DD): ");
+            toDate = readLine();
+            if (!isDateValid(toDate)){
+                System.out.println("Invalid date entered. Please try again!");
+            }
+            System.out.println();
+        }
+
+        String toTime = "";
+        while(!isTimeValid(toTime)) {
+            System.out.print("Enter end time (HH:mm e.g. 17:30): ");
+            toTime = readLine();
+            if (!isTimeValid(toTime)){
+                System.out.println("Invalid time entered. Please try again!");
+            }
+            System.out.println();
+        }
+
+        int numAvailableVehicles = delegate.countAvailableVehicles(vtname, location, fromDate, fromTime, toDate, toTime, false);
 
         System.out.println("Number of available vehicles: " + numAvailableVehicles);
 
@@ -157,11 +183,13 @@ public class CustomerTransactions {
         while (dlicenseForReservation == null) {
             System.out.print("Enter your driver's license number: ");
             String dlicense = readLine();
-            currentCustomer= delegate.getCustomer(dlicense);
+            currentCustomer = delegate.getCustomer(dlicense);
             if (currentCustomer != null) {
                 dlicenseForReservation = dlicense;
                 System.out.println("Welcome, " + currentCustomer.getName());
                 break;
+            } else {
+                System.out.println("No such driver license found. Please try again!");
             }
         }
 
@@ -177,34 +205,69 @@ public class CustomerTransactions {
         }
         String vtname = vehicleTypeModels.get(vehicleTypeChoice - 1).getVtname();
 
-        System.out.print("Enter start date (YYYY-MM-DD): ");
-        String fromDate = readLine();
-        System.out.println();
-        System.out.print("Enter start time (HH:mm e.g. 17:30): ");
-        String fromTime = readLine();
-        System.out.println();
+        String fromDate = "";
+        while(!isDateValid(fromDate)) {
+            System.out.print("Enter start date (YYYY-MM-DD): ");
+            fromDate = readLine();
+            if (!isDateValid(fromDate)){
+                System.out.println("Invalid date entered. Please try again!");
+            }
+            System.out.println();
+        }
 
-        System.out.print("Enter end date (YYYY-MM-DD): ");
-        String toDate = readLine();
-        System.out.println();
-        System.out.print("Enter end time (HH:mm e.g. 17:30): ");
-        String toTime = readLine();
-        System.out.println();
+        String fromTime = "";
+        while (!isTimeValid(fromTime)) {
+            System.out.print("Enter start time (HH:mm e.g. 17:30): ");
+            fromTime = readLine();
+            if (!isTimeValid(fromTime)){
+                System.out.println("Invalid time entered. Please try again!");
+            }
+            System.out.println();
+        }
 
-        ReservationModel reservation = new ReservationModel(vtname,
-                currentCustomer,
-                Timestamp.valueOf(fromDate + " " + fromTime + ":00.00"),
-                Timestamp.valueOf(toDate + " " + toTime + ":00.00"));
+        String toDate = "";
+        while(!isDateValid(toDate)) {
+            System.out.print("Enter end date (YYYY-MM-DD): ");
+            toDate = readLine();
+            if (!isDateValid(toDate)){
+                System.out.println("Invalid date entered. Please try again!");
+            }
+            System.out.println();
+        }
 
-        delegate.insertReservation(reservation);
+        String toTime = "";
+        while(!isTimeValid(toTime)) {
+            System.out.print("Enter end time (HH:mm e.g. 17:30): ");
+            toTime = readLine();
+            if (!isTimeValid(toTime)){
+                System.out.println("Invalid time entered. Please try again!");
+            }
+            System.out.println();
+        }
 
-        System.out.println("Reservation Complete!");
-        System.out.println("Reservation Details: ");
-        System.out.printf("%-20s%-20s%-20s%-20s%-20s", "CONFIRMATION NO.", "VEHICLE TYPE", "DRIVER'S LICENSE", "FROM DATE/TIME", "TO DATE/TIME");
-        System.out.println();
-        System.out.printf("%-20s%-20s%-20s%-20s%-20s", reservation.getconfNo(), reservation.getVtname(), reservation.getDlicense(), reservation.getFromDateTime().toString(), reservation.getToDateTime().toString());
+        int availVehicles = delegate.countAvailableVehicles(vtname, "", fromDate, fromTime, toDate, toTime, true);
+        if (availVehicles == 0) {
+            System.out.println("There are no available vehicles for your requested criteria. ");
+        } else {
 
-        //TODO: CHECK IF VEHICLES ARE AVAILABLE
+            ReservationModel reservation = new ReservationModel(vtname,
+                    currentCustomer,
+                    Timestamp.valueOf(fromDate + " " + fromTime + ":00.00"),
+                    Timestamp.valueOf(toDate + " " + toTime + ":00.00"));
+
+            delegate.insertReservation(reservation);
+
+            System.out.println("Reservation Complete!");
+            System.out.println("Reservation Details: ");
+            System.out.printf("%-20s%-20s%-20s%-20s%-20s", "CONFIRMATION NO.", "VEHICLE TYPE", "DRIVER'S LICENSE", "FROM DATE/TIME", "TO DATE/TIME");
+            System.out.println();
+            System.out.printf("%-20s%-20s%-20s%-20s%-20s",
+                    reservation.getconfNo(),
+                    reservation.getVtname(),
+                    reservation.getDlicense(),
+                    reservation.getFromDateTime().toString().substring(0, reservation.getFromDateTime().toString().length()-5),
+                    reservation.getToDateTime().toString().substring(0, reservation.getToDateTime().toString().length()-5));
+        }
     }
 
     private void handleQuitOption() {
@@ -247,6 +310,14 @@ public class CustomerTransactions {
             System.out.println(EXCEPTION_TAG + " " + e.getMessage());
         }
         return result;
+    }
+
+    private boolean isDateValid(String dateString){
+        return dateString.matches("\\d{4}\\-(0[1-9]|1[012])\\-(0[1-9]|[12][0-9]|3[01])");
+    }
+
+    private boolean isTimeValid(String timeString){
+        return timeString.matches("(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]");
     }
 
 

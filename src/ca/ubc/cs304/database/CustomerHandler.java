@@ -123,21 +123,22 @@ public class CustomerHandler {
 
     //format: YYYY-MM-DD and HH:mm
     public int countAvailableVehicles(String vtname, String location, String fromDate,
-                                       String fromTime, String toDate, String toTime) {
+                                       String fromTime, String toDate, String toTime, boolean excludeLocation) {
         int count = 0;
         try {
 
+            String locationQuery = excludeLocation ? "" : "AND vehicle.LOCATION = ? ";
             //First count vehicles that have no rentals
             PreparedStatement ps1 = connection.prepareStatement(
                     "SELECT COUNT(*) " +
                             "FROM vehicle " +
                             "WHERE vehicle.VLICENSE NOT IN (SELECT rental.VLICENSE FROM rental) " +
                             "AND vehicle.vtname = ? " +
-                            "AND vehicle.LOCATION = ? " +
+                            locationQuery +
                             "AND vehicle.STATUS = 'available'"
             );
             ps1.setString(1, vtname);
-            ps1.setString(2, location);
+            if (!excludeLocation) ps1.setString(2, location);
 
             ResultSet rs1 = ps1.executeQuery();
             while (rs1.next()) {
@@ -150,17 +151,17 @@ public class CustomerHandler {
                             "FROM vehicle, rental " +
                             "WHERE rental.VLICENSE = vehicle.VLICENSE " +
                             "AND vehicle.VTNAME = ? " +
-                            "AND vehicle.LOCATION = ? " +
+                            locationQuery +
                             "AND (? < rental.RENTAL_FROMDATETIME " +
                             "OR ? > rental.RENTAL_TODATETIME) ");
             ps2.setString(1, vtname);
-            ps2.setString(2, location);
+            if (!excludeLocation) ps2.setString(2, location);
             String inputToDateTime = toDate + " " + toTime + ":00.00"; //date in YYYY-MM-DD and time in HH:mm
             Timestamp toTimestamp = Timestamp.valueOf(inputToDateTime);
-            ps2.setTimestamp(3, toTimestamp);
+            ps2.setTimestamp(excludeLocation ? 2 : 3, toTimestamp);
             String inputFromDateTime = fromDate + " " + fromTime + ":00.00";
             Timestamp fromTimestamp = Timestamp.valueOf(inputFromDateTime);
-            ps2.setTimestamp(4, fromTimestamp);
+            ps2.setTimestamp(excludeLocation ? 3 : 4, fromTimestamp);
 
 
             ResultSet rs2 = ps2.executeQuery();

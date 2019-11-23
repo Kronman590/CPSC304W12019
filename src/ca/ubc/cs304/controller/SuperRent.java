@@ -85,9 +85,9 @@ public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDeleg
 	}
 
 	public int countAvailableVehicles(String vtname, String location, String fromDate,
-									  String fromTime, String toDate, String toTime){
+									  String fromTime, String toDate, String toTime, boolean excludeLocation){
     	return dbHandler.getCustomerHandler().countAvailableVehicles(vtname, location, fromDate,
-				fromTime, toDate, toTime);
+				fromTime, toDate, toTime, excludeLocation);
 	}
 
 	public List<VehicleDetailsModel> getAvailableVehicleDetails(String vtname, String location, String fromDate,
