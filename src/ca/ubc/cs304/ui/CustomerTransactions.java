@@ -98,6 +98,10 @@ public class CustomerTransactions {
 
         System.out.println("Number of available vehicles: " + numAvailableVehicles);
 
+        if (numAvailableVehicles == 0){
+            return;
+        }
+
         String yesNo = " ";
         while (!(yesNo.equalsIgnoreCase("y") || yesNo.equalsIgnoreCase("n"))) {
             System.out.println("View details? (Y/N): ");
