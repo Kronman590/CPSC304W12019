@@ -23,12 +23,12 @@ public interface TerminalTransactionsDelegate {
 
 	List<VehicleTypeModel> getVehicleTypes();
 
-	List<String> getLocations();
+	List<LocationCityModel> getLocations();
 
-	int countAvailableVehicles(String vtname, String location, String fromDate,
+	int countAvailableVehicles(String vtname, String location, String city, String fromDate,
 									  String fromTime, String toDate, String toTime);
 
-	List<VehicleDetailsModel> getAvailableVehicleDetails(String vtname, String location, String fromDate,
+	List<VehicleDetailsModel> getAvailableVehicleDetails(String vtname, String location, String city, String fromDate,
 														 String fromTime, String toDate, String toTime);
 
 	void insertCustomer(CustomerModel customerModel);

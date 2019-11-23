@@ -2,10 +2,7 @@ package ca.ubc.cs304.database;
 
 /* this class handles all customer operations */
 
-import ca.ubc.cs304.model.CustomerModel;
-import ca.ubc.cs304.model.ReservationModel;
-import ca.ubc.cs304.model.VehicleDetailsModel;
-import ca.ubc.cs304.model.VehicleTypeModel;
+import ca.ubc.cs304.model.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -105,14 +102,14 @@ public class CustomerHandler {
         return result;
     }
 
-    public List<String> getLocations() {
-        List<String> result = new ArrayList<>();
+    public List<LocationCityModel> getLocations() {
+        List<LocationCityModel> result = new ArrayList<>();
         Statement stmt = null;
         try {
             stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT DISTINCT location FROM VEHICLE");
+            ResultSet rs = stmt.executeQuery("SELECT DISTINCT location, city FROM VEHICLE");
             while (rs.next()) {
-                result.add(rs.getString("location"));
+                result.add(new LocationCityModel(rs.getString("location"), rs.getString("city")));
             }
             rs.close();
             stmt.close();
@@ -122,8 +119,8 @@ public class CustomerHandler {
         return result;
     }
 
-    private PreparedStatement makeQueryAvailableVehicles(String vtname, String location, String fromDate,
-                                                        String fromTime, String toDate, String toTime, boolean isCount) {
+    private PreparedStatement makeQueryAvailableVehicles(String vtname, String location, String city, String fromDate,
+                                                         String fromTime, String toDate, String toTime, boolean isCount) {
 
         PreparedStatement ps = null;
         try {
@@ -131,7 +128,7 @@ public class CustomerHandler {
             boolean isLocationEmpty = location == null || location.equals("");
             boolean isVtnameEmpty = vtname == null || vtname.equals("");
             boolean hasTimeInterval = fromDate != null && !fromDate.equals("");
-            String locationQuery = isLocationEmpty ? "" : "vehicle.LOCATION = ? AND ";
+            String locationQuery = isLocationEmpty ? "" : "vehicle.LOCATION = ? AND vehicle.CITY = ? AND ";
             String vtnameQuery = isVtnameEmpty ? "" : "vehicle.vtname = ? AND ";
             String selectStmt = isCount ? "COUNT(*) AS count " : "* ";
             String timeIntervalQuery = hasTimeInterval ?
@@ -148,12 +145,13 @@ public class CustomerHandler {
                             timeIntervalQuery
             );
             int numParameters = 0;
-            if (!isLocationEmpty) numParameters++;
+            if (!isLocationEmpty) numParameters+=2;
             if (!isVtnameEmpty) numParameters++;
             if (hasTimeInterval) numParameters += 2;
 
             boolean vtnameSet = false;
             boolean locationSet = false;
+            boolean citySet = false;
             boolean toTimestampSet = false;
             boolean fromTimestampSet = false;
             for (int i = 1; i <= numParameters; i++) {
@@ -165,6 +163,11 @@ public class CustomerHandler {
                 if (!isLocationEmpty && !locationSet) {
                     ps.setString(i, location);
                     locationSet = true;
+                    continue;
+                }
+                if (!isLocationEmpty && !citySet) {
+                    ps.setString(i, city);
+                    citySet = true;
                     continue;
                 }
                 if (hasTimeInterval && !toTimestampSet) {
@@ -189,10 +192,10 @@ public class CustomerHandler {
     }
 
     //format: YYYY-MM-DD and HH:mm
-    public int countAvailableVehicles(String vtname, String location, String fromDate,
+    public int countAvailableVehicles(String vtname, String location, String city, String fromDate,
                                       String fromTime, String toDate, String toTime) {
         int count = 0;
-        PreparedStatement ps = makeQueryAvailableVehicles(vtname, location, fromDate, fromTime, toDate, toTime, true);
+        PreparedStatement ps = makeQueryAvailableVehicles(vtname, location, city, fromDate, fromTime, toDate, toTime, true);
 
         try {
             ResultSet rs = ps.executeQuery();
@@ -207,9 +210,9 @@ public class CustomerHandler {
         return count;
     }
 
-    public List<VehicleDetailsModel> getAvailableVehicleDetails(String vtname, String location, String fromDate,
+    public List<VehicleDetailsModel> getAvailableVehicleDetails(String vtname, String location, String city, String fromDate,
                                                                 String fromTime, String toDate, String toTime) {
-        PreparedStatement ps = makeQueryAvailableVehicles(vtname, location, fromDate, fromTime, toDate, toTime, false);
+        PreparedStatement ps = makeQueryAvailableVehicles(vtname, location, city, fromDate, fromTime, toDate, toTime, false);
 
         List<VehicleDetailsModel> vehicleDetailsList = new LinkedList<>();
         try {
@@ -219,7 +222,9 @@ public class CustomerHandler {
                         rs.getString("model"),
                         rs.getInt("year"),
                         rs.getString("color"),
-                        rs.getString("vtname"));
+                        rs.getString("vtname"),
+                        rs.getString("location"),
+                        rs.getString("city"));
                 vehicleDetailsList.add(vehicleDetails);
             }
             rs.close();

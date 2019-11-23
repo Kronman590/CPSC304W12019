@@ -81,19 +81,19 @@ public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDeleg
     	return dbHandler.getCustomerHandler().getVehicleTypes();
 	}
 
-	public List<String> getLocations(){
+	public List<LocationCityModel> getLocations(){
     	return dbHandler.getCustomerHandler().getLocations();
 	}
 
-	public int countAvailableVehicles(String vtname, String location, String fromDate,
+	public int countAvailableVehicles(String vtname, String location, String city, String fromDate,
 									  String fromTime, String toDate, String toTime){
-    	return dbHandler.getCustomerHandler().countAvailableVehicles(vtname, location, fromDate,
+    	return dbHandler.getCustomerHandler().countAvailableVehicles(vtname, location, city, fromDate,
 				fromTime, toDate, toTime);
 	}
 
-	public List<VehicleDetailsModel> getAvailableVehicleDetails(String vtname, String location, String fromDate,
+	public List<VehicleDetailsModel> getAvailableVehicleDetails(String vtname, String location, String city, String fromDate,
                                                                 String fromTime, String toDate, String toTime) {
-        return dbHandler.getCustomerHandler().getAvailableVehicleDetails(vtname, location, fromDate, fromTime, toDate, toTime);
+        return dbHandler.getCustomerHandler().getAvailableVehicleDetails(vtname, location, city, fromDate, fromTime, toDate, toTime);
     }
 
     public void insertCustomer(CustomerModel customerModel){

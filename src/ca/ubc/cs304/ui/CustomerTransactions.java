@@ -1,11 +1,9 @@
 package ca.ubc.cs304.ui;
 
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
-import ca.ubc.cs304.model.CustomerModel;
-import ca.ubc.cs304.model.ReservationModel;
-import ca.ubc.cs304.model.VehicleDetailsModel;
-import ca.ubc.cs304.model.VehicleTypeModel;
+import ca.ubc.cs304.model.*;
 
+import javax.xml.stream.Location;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -75,9 +73,9 @@ public class CustomerTransactions {
         String vtname = vehicleTypeChoice==EMPTY_INPUT ? "": vehicleTypeModels.get(vehicleTypeChoice - 1).getVtname();
 
         System.out.println("Select location (optional): ");
-        List<String> locations = delegate.getLocations();
+        List<LocationCityModel> locations = delegate.getLocations();
         for (int i = 0; i < locations.size(); i++) {
-            System.out.println((i + 1) + ": " + locations.get(i));
+            System.out.println((i+1) + ": " + locations.get(i).getLocation() + ", " + locations.get(i).getCity());
         }
         int locationChoice = INVALID_INPUT;
         while (locationChoice < 1 || locationChoice > locations.size() + 1) {
@@ -85,7 +83,8 @@ public class CustomerTransactions {
             locationChoice = readInteger(true);
             if (locationChoice==EMPTY_INPUT) break;
         }
-        String location = locationChoice==EMPTY_INPUT ? "" : locations.get(locationChoice - 1);
+        String location = locationChoice==EMPTY_INPUT ? "" : locations.get(locationChoice - 1).getLocation();
+        String city = locationChoice==EMPTY_INPUT ? "" : locations.get(locationChoice - 1).getCity();
 
         String ynTimeInterval = " ";
         while (!(ynTimeInterval.equalsIgnoreCase("y") || ynTimeInterval.equalsIgnoreCase("n"))){
@@ -149,7 +148,7 @@ public class CustomerTransactions {
             }
         }
 
-        int numAvailableVehicles = delegate.countAvailableVehicles(vtname, location, fromDate, fromTime, toDate, toTime);
+        int numAvailableVehicles = delegate.countAvailableVehicles(vtname, location, city, fromDate, fromTime, toDate, toTime);
 
         System.out.println("Number of available vehicles: " + numAvailableVehicles);
 
@@ -162,10 +161,10 @@ public class CustomerTransactions {
             System.out.println("View details? (Y/N): ");
             yesNo = readLine();
             if (yesNo.equalsIgnoreCase("y")) {
-                List<VehicleDetailsModel> vehicleDetails = delegate.getAvailableVehicleDetails(vtname, location, fromDate, fromTime, toDate, toTime);
+                List<VehicleDetailsModel> vehicleDetails = delegate.getAvailableVehicleDetails(vtname, location, city, fromDate, fromTime, toDate, toTime);
                 System.out.println();
                 System.out.println("Details of available vehicles: ");
-                System.out.printf("%-15s%-15s%-15s%-15s%-15s", "MAKE", "MODEL", "YEAR", "COLOR", "VEHICLE TYPE");
+                System.out.printf("%-15s%-15s%-15s%-15s%-15s%-15s%-15s", "MAKE", "MODEL", "YEAR", "COLOR", "VEHICLE TYPE", "LOCATION", "CITY");
                 for (VehicleDetailsModel v : vehicleDetails) {
                     System.out.println();
                     System.out.printf("%-15s", v.getMake());
@@ -173,6 +172,8 @@ public class CustomerTransactions {
                     System.out.printf("%-15s", v.getYear());
                     System.out.printf("%-15s", v.getColor());
                     System.out.printf("%-15s", v.getVtname());
+                    System.out.printf("%-15s", v.getLocation());
+                    System.out.printf("%-15s", v.getCity());
                 }
                 System.out.println();
                 break;
@@ -289,7 +290,7 @@ public class CustomerTransactions {
             System.out.println();
         }
 
-        int availVehicles = delegate.countAvailableVehicles(vtname, "", fromDate, fromTime, toDate, toTime);
+        int availVehicles = delegate.countAvailableVehicles(vtname, "", "", fromDate, fromTime, toDate, toTime);
         if (availVehicles == 0) {
             System.out.println("There are no available vehicles for your requested criteria. ");
         } else {
