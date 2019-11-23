@@ -28,12 +28,13 @@ public class CustomerTransactions {
 
     public void showCustomerMenu() {
         int choice = Integer.MIN_VALUE;
-        while (choice != 3) {
+        while (choice != 4) {
             System.out.println();
             System.out.println("1. Search Vehicles");
             System.out.println("2. Make a Reservation");
             System.out.println("3. Quit");
-            System.out.print("Please choose one of the above 3 options: ");
+            System.out.println("4. Return to Main Menu");
+            System.out.print("Please choose one of the above 4 options: ");
 
             choice = readInteger(false);
 
@@ -49,6 +50,9 @@ public class CustomerTransactions {
                         break;
                     case 3:
                         handleQuitOption();
+                        break;
+                    case 4:
+                        System.out.println("Returning to Main Menu.");
                         break;
                     default:
                         System.out.println(WARNING_TAG + " The number that you entered was not a valid option.");
