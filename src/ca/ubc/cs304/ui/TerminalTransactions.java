@@ -84,7 +84,8 @@ public class TerminalTransactions {
 			System.out.println("5. Create daily return report");
 			System.out.println("6. Create daily branch return report");
 			System.out.println("7. Quit");
-			System.out.print("Please choose one of the above 7 options: ");
+            System.out.println("8. Return to Main Menu");
+			System.out.print("Please choose one of the above 8 options: ");
 
 			choice = readInteger(false);
 
@@ -121,6 +122,9 @@ public class TerminalTransactions {
 					case 7:
 						handleQuitOption();
 						break;
+                    case 8:
+                        System.out.println("Returning to Main Menu.");
+                        break;
 					default:
 						System.out.println(WARNING_TAG + " The number that you entered was not a valid option.");
 						break;
