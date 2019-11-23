@@ -73,8 +73,9 @@ public class TerminalTransactions {
 
 	private void handleClerkOption(){
 		int choice = INVALID_INPUT;
+		String location, city;
 
-		while (choice != 3) {
+		while (choice != 8) {
 			System.out.println();
 			System.out.println("1. Rent Vehicle");
 			System.out.println("2. Return Vehicle");
@@ -83,7 +84,8 @@ public class TerminalTransactions {
 			System.out.println("5. Create daily return report");
 			System.out.println("6. Create daily branch return report");
 			System.out.println("7. Quit");
-			System.out.print("Please choose one of the above 7 options: ");
+            System.out.println("8. Return to Main Menu");
+			System.out.print("Please choose one of the above 8 options: ");
 
 			choice = readInteger(false);
 
@@ -98,16 +100,31 @@ public class TerminalTransactions {
 						handleReturnVehicle();
 						break;
 					case 3:
-						//TODO
+						delegate.dailyRental();
+						break;
 					case 4:
-						//TODO
+						System.out.println("Please enter the branch location");
+						location = readLine();
+						System.out.println("Please enter the branch city");
+						city = readLine();
+						delegate.dailyBranchRental(location, city);
+						break;
 					case 5:
-						//TODO
+						delegate.dailyReturn();
+						break;
 					case 6:
-						//TODO
+                        System.out.println("Please enter the branch location");
+                        location = readLine();
+                        System.out.println("Please enter the branch city");
+                        city = readLine();
+                        delegate.dailyBranchReturn(location, city);
+                        break;
 					case 7:
 						handleQuitOption();
 						break;
+                    case 8:
+                        System.out.println("Returning to Main Menu.");
+                        break;
 					default:
 						System.out.println(WARNING_TAG + " The number that you entered was not a valid option.");
 						break;
@@ -116,56 +133,35 @@ public class TerminalTransactions {
 		}
 	}
 
+
 	private void handleMakeRental() {
 		String rid = null;
-		Date fromDate = null;
-		Timestamp fromTime = null;
-		Date toDate = null;
-		Timestamp toTime = null;
+		Timestamp fromDateTime = null;
+		Timestamp toDateTime = null;
 		while (rid == null || rid.length() <= 0) {
 			System.out.print("Is there a reservation? If so, provide the reservation ID. Else, say 'No' : ");
 			rid = readLine().trim();
 		}
 
 		if (rid.equalsIgnoreCase("no")) {
-			while (fromDate == null) {
-				System.out.print("What day will the rental begin? (enter as DD/MM/YYYY): ");
+			while (fromDateTime == null) {
+				System.out.print("When will the rental begin? (enter as YYYY-MM-DD HH:mm): ");
 				try {
-					java.util.Date tempDate = new SimpleDateFormat("DD/MM/YYYY").parse(readLine().trim());
-					fromDate = new java.sql.Date(tempDate.getTime());
+					// java.util.Date tempDate = new SimpleDateFormat("DD/MM/YYYY HH:mm").parse();
+					fromDateTime = Timestamp.valueOf(readLine()+":00.00");
 				} catch (Exception err) {
 					System.out.println("Invalid Date input. Please try again.");
-					fromDate = null;
+					fromDateTime = null;
 				}
 			}
-			while (fromTime == null) {
-				System.out.print("What time will the rental begin? (enter as HH:mm): ");
+			while (toDateTime == null) {
+				System.out.print("When will the rental end? (enter as YYYY-MM-DD HH:mm) : ");
 				try {
-					java.util.Date tempDate = new SimpleDateFormat("HH:mm").parse(readLine().trim());
-					fromTime = new java.sql.Timestamp(tempDate.getTime());
-				} catch (Exception err) {
-					System.out.println("Invalid Time input. Please try again.");
-					fromTime = null;
-				}
-			}
-			while (toDate == null) {
-				System.out.print("What day will the rental end? (enter as DD/MM/YYYY) : ");
-				try {
-					java.util.Date tempDate = new SimpleDateFormat("DD/MM/YYYY").parse(readLine().trim());
-					toDate = new java.sql.Date(tempDate.getTime());
+					//java.util.Date tempDate = new SimpleDateFormat("DD/MM/YYYY HH:mm").parse(readLine().trim());
+					toDateTime = Timestamp.valueOf(readLine()+":00.00");
 				} catch (Exception err) {
 					System.out.println("Invalid Date input. Please try again.");
-					toDate = null;
-				}
-			}
-			while (toTime == null) {
-				System.out.print("What time will the rental begin? (enter as HH:mm) : ");
-				try {
-					java.util.Date tempDate = new SimpleDateFormat("HH:mm").parse(readLine().trim());
-					toTime = new java.sql.Timestamp(tempDate.getTime());
-				} catch (Exception err) {
-					System.out.println("Invalid Time input. Please try again.");
-					toTime = null;
+					toDateTime = null;
 				}
 			}
 		}
@@ -213,41 +209,27 @@ public class TerminalTransactions {
 
 		CreditCard card = new CreditCard(cardNo, cardName, cardExp);
 		if (rid.equalsIgnoreCase("no")) {
-			delegate.makeRental(vlicense, dlicense, odometer, card, null, fromDate, fromTime, toDate, toTime);
+			delegate.makeRental(vlicense, dlicense, odometer, card, null, fromDateTime, toDateTime);
 		} else {
-			delegate.makeRental(vlicense, dlicense, odometer, card, rid, fromDate, fromTime, toDate, toTime);
+			delegate.makeRental(vlicense, dlicense, odometer, card, rid, fromDateTime, toDateTime);
 		}
 	}
 
 	private void handleReturnVehicle() {
-//rid, retDate, retTime, retOdometer, fullTank
 		String rid = null;
 		while (rid == null || rid.length() <= 0) {
 			System.out.print("Please enter the rental id number: ");
 			rid = readLine().trim();
 		}
 
-		Date retDate = null;
-		while (retDate == null) {
-			System.out.print("What day was the vehicle returned? (enter as DD/MM/YYYY): ");
+		Timestamp retDateTime = null;
+		while (retDateTime == null) {
+			System.out.print("When was the vehicle returned? (enter as YYYY-MM-DD HH:mm): ");
 			try {
-				java.util.Date tempDate = new SimpleDateFormat("DD/MM/YYYY").parse(readLine().trim());
-				retDate = new java.sql.Date(tempDate.getTime());
+				retDateTime = Timestamp.valueOf(readLine()+":00.00");
 			} catch (Exception err) {
 				System.out.println("Invalid Date input. Please try again.");
-				retDate = null;
-			}
-		}
-
-		Timestamp retTime = null;
-		while (retTime == null) {
-			System.out.print("What time was the vehicle returned? (enter as HH:mm) : ");
-			try {
-				java.util.Date tempDate = new SimpleDateFormat("HH:mm").parse(readLine().trim());
-				retTime = new java.sql.Timestamp(tempDate.getTime());
-			} catch (Exception err) {
-				System.out.println("Invalid Time input. Please try again.");
-				retDate = null;
+				retDateTime = null;
 			}
 		}
 
@@ -264,7 +246,7 @@ public class TerminalTransactions {
 		}
 		boolean full = fullTank.equalsIgnoreCase("yes");
 
-		delegate.returnVehicle(rid, retDate, retTime, odometer, full);
+		delegate.returnVehicle(rid, retDateTime, odometer, full);
 	}
 
 	private void handleQuitOption() {

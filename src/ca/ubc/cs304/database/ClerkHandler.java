@@ -10,6 +10,7 @@ import ca.ubc.cs304.model.BranchModel;
 import ca.ubc.cs304.model.ReservationModel;
 import ca.ubc.cs304.model.VehicleModel;
 import ca.ubc.cs304.model.CreditCard;
+import ca.ubc.cs304.ui.ReportGenerator;
 
 import static java.lang.Math.floor;
 
@@ -23,6 +24,7 @@ public class ClerkHandler {
 	private static final String WARNING_TAG = "[WARNING]";
 	
 	private Connection connection = null;
+	private ReportGenerator re;
 
 	private int rentalID = 1;
 	
@@ -35,6 +37,7 @@ public class ClerkHandler {
 //			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 //		}
 		this.connection = connection;
+		re = new ReportGenerator();
 	}
 	
 	public void close() {
@@ -50,13 +53,11 @@ public class ClerkHandler {
 	public void rentVehicle(String confNo, String vlicense, String dlicense, int odometer, CreditCard card) { // If reservation is provided
 		try {
 			Statement stmt = connection.createStatement();
-			ResultSet res = stmt.executeQuery("SELECT rental_fromDate,rental_fromTime,rental_toDate,rental_toTime FROM reservation WHERE reservation.res_confNo = " + confNo);
+			ResultSet res = stmt.executeQuery("SELECT rental_fromDateTime,rental_toDateTime FROM reservation WHERE reservation.res_confNo = " + confNo);
 			while(res.next()) {
-				String fromDate = res.getString("rental_fromDate");
-				String fromTime = res.getString("rental_fromTime");
-				String toDate = res.getString("rental_toDate");
-				String toTime = res.getString("rental_toTime");
-				PreparedStatement ps = connection.prepareStatement("INSERT INTO rental VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+				Timestamp fromDateTime = res.getTimestamp("rental_fromDateTime");
+				Timestamp toDateTime = res.getTimestamp("rental_toDateTime");
+				PreparedStatement ps = connection.prepareStatement("INSERT INTO rental VALUES (?,?,?,?,?,?,?,?,?,?)");
 				String rid = String.valueOf(rentalID);
 				while (rid.length() < 6) {
 					rid = "0" + rid;
@@ -65,15 +66,13 @@ public class ClerkHandler {
 				rentalID++;
 				ps.setString(2, vlicense);
 				ps.setString(3, dlicense);
-				ps.setString(4, fromDate);
-				ps.setString(5, fromTime);
-				ps.setString(6, toDate);
-				ps.setString(7, toTime);
-				ps.setInt(8, odometer);
-				ps.setString(9, card.getCardName());
-				ps.setString(10, card.getCardNo());
-				ps.setString(11, card.getExpDate());
-				ps.setString(12, confNo);
+				ps.setTimestamp(4, fromDateTime);
+				ps.setTimestamp(5, toDateTime);
+				ps.setInt(6, odometer);
+				ps.setString(7, card.getCardName());
+				ps.setString(8, card.getCardNo());
+				ps.setString(9, card.getExpDate());
+				ps.setString(10, confNo);
 				ps.executeUpdate();
 				PreparedStatement ps2 = connection.prepareStatement("UPDATE vehicle SET status = ? WHERE vlicense = ?");
 				ps2.setString(1, "rented");
@@ -82,8 +81,8 @@ public class ClerkHandler {
 				if (rowCount == 0) {
 					System.out.println(WARNING_TAG + " Vehicle " + vlicense + " does not exist!");
 				}
-				System.out.println(" RECEIPT FOR RENTAL: \n Your Rental ID: " + rentalID + "\n Vehicle License Plate: "
-						+ vlicense + "\n From " + fromDate + ", " + fromTime + " to " + toDate + ", " + toTime + "\n Paid for by: " + card.getCardName());
+				System.out.println(" RECEIPT FOR RENTAL: \n Your Rental ID: " + rentalID + "\n Vehicle License Plate: " + vlicense
+						+ "\n From " + fromDateTime + ", " + " to " + toDateTime + "\n Paid for by: " + card.getCardName());
 				connection.commit();
 				ps.close();
 				ps2.close();
@@ -96,9 +95,9 @@ public class ClerkHandler {
 		}
 	}
 
-	public void rentVehicleNoReserve(java.sql.Date fromDate, Timestamp fromTime, java.sql.Date toDate, Timestamp toTime, String vlicense, String dlicense, int odometer, CreditCard card) { // If reservation is *not* provided
+	public void rentVehicleNoReserve(java.sql.Timestamp fromDateTime, java.sql.Timestamp toDateTime, String vlicense, String dlicense, int odometer, CreditCard card) { // If reservation is *not* provided
 		try {
-			PreparedStatement ps = connection.prepareStatement("INSERT INTO rental VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO rental VALUES (?,?,?,?,?,?,?,?,?,?)");
 			String rid = String.valueOf(rentalID);
 			while (rid.length() < 6) {
 				rid = "0" + rid;
@@ -107,15 +106,13 @@ public class ClerkHandler {
 			rentalID++;
 			ps.setString(2, vlicense);
 			ps.setString(3, dlicense);
-			ps.setDate(4, fromDate);
-			ps.setTimestamp(5, fromTime);
-			ps.setDate(6, toDate);
-			ps.setTimestamp(7, toTime);
-			ps.setInt(8, odometer);
-			ps.setString(9, card.getCardName());
-			ps.setString(10, card.getCardNo());
-			ps.setString(11, card.getExpDate());
-			ps.setNull(5, java.sql.Types.CHAR);
+			ps.setTimestamp(4, fromDateTime);
+			ps.setTimestamp(5, toDateTime);
+			ps.setInt(6, odometer);
+			ps.setString(7, card.getCardName());
+			ps.setString(8, card.getCardNo());
+			ps.setString(9, card.getExpDate());
+			ps.setNull(10, java.sql.Types.CHAR);
 			ps.executeUpdate();
 			PreparedStatement ps2 = connection.prepareStatement("UPDATE vehicle SET status = ? WHERE vlicense = ?");
 			ps2.setString(1, "rented");
@@ -124,9 +121,8 @@ public class ClerkHandler {
 			if (rowCount == 0) {
 				System.out.println(WARNING_TAG + " Vehicle " + vlicense + " does not exist!");
 			}
-			System.out.println(" RECEIPT FOR RENTAL: \n Your Rental ID: " + rentalID + "\n Vehicle License Plate: "
-					+ vlicense + "\n From " + fromDate + ", " + fromTime + " to " + toDate + ", " + toTime
-					+ "\n Paid for by: " + card.getCardName());
+			System.out.println(" RECEIPT FOR RENTAL: \n Your Rental ID: " + rentalID + "\n Vehicle License Plate: " + vlicense
+					+ "\n From " + fromDateTime + ", " + " to " + toDateTime + "\n Paid for by: " + card.getCardName());
 			connection.commit();
 			ps.close();
 			ps2.close();
@@ -136,65 +132,59 @@ public class ClerkHandler {
 		}
 	}
 
-	public void returnVehicle(String rid, java.sql.Date retDate, java.sql.Timestamp retTime, int retOdometer, boolean fullTank) {
+	public void returnVehicle(String rid, java.sql.Timestamp retDateTime, int retOdometer, boolean fullTank) {
 		try {
 			boolean returnComplete = false;
+			double totalCost = 0.0;
 			Statement stmt = connection.createStatement();
-			ResultSet rntl = stmt.executeQuery("SELECT * FROM rental WHERE rental.rental_rid = " + rid);
-			while(rntl.next()) {
-				String strtDate = rntl.getString("rental_fromDate");
-				String strtTime = rntl.getString("rental_fromTime");
-				int odometer = rntl.getInt("rental_odometer");
-				ResultSet vech = stmt.executeQuery("SELECT vtname FROM vehicle WHERE vehicle.vlicense = " + "'"+rntl.getString("vlicense")+"'");
-				while (vech.next()) {
-					ResultSet vtype = stmt.executeQuery("SELECT * FROM vehicleType WHERE vehicleType.vtname = " + "'" + vech.getString("vtname") + "'");
-					while (vtype.next()) {
-						Date timeBegin = null;
-						Date timeEnd = null;
-						try {
-							timeBegin = new SimpleDateFormat("MM/DD/YYYY HH:MM").parse((strtDate+" "+strtTime));
-							timeEnd = new SimpleDateFormat("MM/DD/YYYY HH:MM").parse((retDate+" "+retTime));
-						} catch (Exception dateErr) {
-							System.out.println("Invalid Date input.");
-							rollbackConnection();
-						}
-						double weeks = floor(TimeUnit.DAYS.convert(timeEnd.getTime() - timeBegin.getTime(), TimeUnit.MILLISECONDS) / 7.0);
-						double days = TimeUnit.DAYS.convert(timeEnd.getTime() - timeBegin.getTime(), TimeUnit.MILLISECONDS) % 7.0;
-						double hours = TimeUnit.HOURS.convert(timeEnd.getTime() - timeBegin.getTime(), TimeUnit.MILLISECONDS) - (weeks * 7 + days) * 24;
-						double totalCost = weeks * (vtype.getDouble("wrate") + vtype.getDouble("wirate")) +
-								days * (vtype.getDouble("drate") + vtype.getDouble("dirate")) + hours * (vtype.getDouble("hrate") + vtype.getDouble("hirate"));
-						System.out.println(" Cost Breakdown: \n Weeks Rented: " + weeks + "\t - \t Weekly Rate: "
-								+ vtype.getDouble("wrate") + "\n Addl. Days Rented: " + days + "\t - \t Daily Rate: " + vtype.getDouble("drate")
-								+ "\n Addl. Hours Rented: " + hours + "\t - \t Hourly Rate: " + vtype.getDouble("hrate") + "\n Insurance Cost: \n Weeks Rented: " + weeks + "\t - \t Weekly Rate: "
-								+ vtype.getDouble("wirate") + "\n Addl. Days Rented: " + days + "\t - \t Daily Rate: " + vtype.getDouble("dirate")
-								+ "\n Addl. Hours Rented: " + hours + "\t - \t Hourly Rate: " + vtype.getDouble("hirate")
-								+ "\n Total Costs: " + totalCost);
-						PreparedStatement ps = connection.prepareStatement("INSERT INTO return VALUES (?,?,?,?,?,?)");
-						ps.setString(1, rid);
-						ps.setDate(2, retDate);
-						ps.setTimestamp(3, retTime);
-						ps.setInt(4, retOdometer);
-						if (fullTank) {
-							ps.setString(5, "1");
-						} else {
-							ps.setString(5, "0");
-						}
-						ps.setDouble(6, totalCost);
-						ps.executeUpdate();
-
-						returnComplete = true;
-						connection.commit();
-						ps.close();
-					}
-					vtype.close();
-				}
-				vech.close();
+			ResultSet checkRepeatID = stmt.executeQuery("SELECT * FROM return WHERE return.rental_rid = " + rid);
+			while (checkRepeatID.next()) {
+				System.out.println("***Vehicle is already returned, please select a different vehicle.***");
+				rollbackConnection();
+				return;
 			}
-			rntl.close();
+			checkRepeatID.close();
+			ResultSet vtype = stmt.executeQuery("SELECT rental_fromDateTime,hrate,drate,wrate,hirate,dirate,wirate FROM vehicle,vehicleType,rental " +
+					"WHERE rental.rental_rid = " + rid + "AND vehicle.vlicense = rental.vlicense AND vehicle.vtname = vehicleType.vtname");
+			while (vtype.next()) {
+				Timestamp strtDateTime = vtype.getTimestamp("rental_fromDateTime");
+				//int odometer = vtype.getInt("rental_odometer");
+				long end = retDateTime.getTime();
+				long start = strtDateTime.getTime();
+				int hours = (int)((end - start)/(1000*3600));
+				int weeks = hours/(24*7);
+				int days = (hours/24)%7;
+				hours = hours%24;
+				totalCost = weeks * (vtype.getDouble("wrate") + vtype.getDouble("wirate")) +
+						days * (vtype.getDouble("drate") + vtype.getDouble("dirate")) + hours * (vtype.getDouble("hrate") + vtype.getDouble("hirate"));
+				System.out.println(" Cost Breakdown: \n Weeks Rented:\t \t \t" + weeks + " x Weekly Rate:\t" + vtype.getDouble("wrate") + "\t = \t" + weeks*vtype.getDouble("wrate")
+						+ "\n Addl. Days Rented:\t \t" + days + " x Daily Rate:\t \t" + vtype.getDouble("drate") + "\t = \t" + days*vtype.getDouble("drate")
+						+ "\n Addl. Hours Rented:\t" + hours + " x Hourly Rate:\t" + vtype.getDouble("hrate") + "\t = \t" + hours*vtype.getDouble("hrate")
+						+ "\n Insurance Cost: \n Weeks Rented: \t \t \t" + weeks + " x Weekly Rate:\t" + vtype.getDouble("wirate") + "\t = \t" + weeks*vtype.getDouble("wirate")
+						+ "\n Addl. Days Rented:\t \t" + days + " x Daily Rate:\t \t" + vtype.getDouble("dirate") + "\t = \t" + days*vtype.getDouble("dirate")
+						+ "\n Addl. Hours Rented:\t" + hours + " x  Hourly Rate:\t" + vtype.getDouble("hirate") + "\t = \t" + hours*vtype.getDouble("hirate")
+						+ "\n Total Costs: " + totalCost);
+				returnComplete = true;
+			}
+			vtype.close();
 			stmt.close();
 			if (!returnComplete) {
-				System.out.println("Return failed, input parameters invalid.");
+				System.out.println("***Return failed, input parameters invalid.***");
+				return;
 			}
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO return VALUES (?,?,?,?,?)");
+			ps.setString(1, rid);
+			ps.setTimestamp(2, retDateTime);
+			ps.setInt(3, retOdometer);
+			if (fullTank) {
+				ps.setString(4, "1");
+			} else {
+				ps.setString(4, "0");
+			}
+			ps.setDouble(5, totalCost);
+			ps.executeUpdate();
+			connection.commit();
+			ps.close();
 		} catch (SQLException e) {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 			rollbackConnection();
@@ -225,4 +215,20 @@ public class ClerkHandler {
 			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
 		}
 	}
+
+	public void dailyRental() {
+        re.dailyRental(connection);
+    }
+
+    public void dailyBranchRental(String location, String city){
+        re.dailyBranchRental(connection,location,city);
+    }
+
+    public void dailyReturn() {
+        re.dailyReturn(connection);
+    }
+
+    public void dailyBranchReturn(String location, String city) {
+        re.dailyBranchReturn(connection,location,city);
+    }
 }

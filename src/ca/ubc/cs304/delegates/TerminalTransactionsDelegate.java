@@ -16,8 +16,8 @@ import java.util.List;
  */
 public interface TerminalTransactionsDelegate {
 
-	void makeRental(String vlicense, String dlicense, int odometer, CreditCard card, String resID, Date fromDate, Timestamp fromTime, Date toDate, Timestamp toTime);
-	void returnVehicle(String rid, Date retDate, Timestamp retTime, int retOdometer, boolean fullTank);
+	void makeRental(String vlicense, String dlicense, int odometer, CreditCard card, String resID, Timestamp fromDateTime, Timestamp toDateTime);
+	void returnVehicle(String rid, Timestamp retDateTime, int retOdometer, boolean fullTank);
 
 	void terminalTransactionsFinished();
 
@@ -36,4 +36,12 @@ public interface TerminalTransactionsDelegate {
 	CustomerModel getCustomer(String dlicense);
 
 	void insertReservation(ReservationModel model);
+
+	void dailyRental();
+
+	void dailyBranchRental(String location, String city);
+
+	void dailyReturn();
+
+	void dailyBranchReturn(String location, String city);
 }

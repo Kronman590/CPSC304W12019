@@ -5,6 +5,7 @@ import ca.ubc.cs304.delegates.LoginWindowDelegate;
 import ca.ubc.cs304.delegates.TerminalTransactionsDelegate;
 import ca.ubc.cs304.model.*;
 import ca.ubc.cs304.ui.LoginWindow;
+import ca.ubc.cs304.ui.ReportGenerator;
 import ca.ubc.cs304.ui.TerminalTransactions;
 
 import java.sql.Date;
@@ -106,16 +107,37 @@ public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDeleg
 	public void insertReservation(ReservationModel model){
     	dbHandler.getCustomerHandler().insertReservation(model);
 	}
-	/**
+
+    @Override
+    public void dailyRental() {
+        dbHandler.getClerkHandler().dailyRental();
+    }
+
+    @Override
+    public void dailyBranchRental(String location, String city) {
+        dbHandler.getClerkHandler().dailyBranchRental(location,city);
+    }
+
+    @Override
+    public void dailyReturn() {
+        dbHandler.getClerkHandler().dailyReturn();
+    }
+
+    @Override
+    public void dailyBranchReturn(String location, String city) {
+        dbHandler.getClerkHandler().dailyBranchReturn(location, city);
+    }
+
+    /**
 	 * TermainalTransactionsDelegate Implementation
 	 *
 	 * Make a rental with the given info
 	 */
-	public void makeRental(String vlicense, String dlicense, int odometer, CreditCard card, String resNo, Date fromDate, Timestamp fromTime, Date toDate, Timestamp toTime) {
+	public void makeRental(String vlicense, String dlicense, int odometer, CreditCard card, String resNo, Timestamp fromDateTime, Timestamp toDateTime) {
 		if (resNo != null) {
 			dbHandler.getClerkHandler().rentVehicle(resNo, vlicense, dlicense, odometer, card);
 		} else {
-			dbHandler.getClerkHandler().rentVehicleNoReserve(fromDate, fromTime, toDate, toTime, vlicense, dlicense, odometer, card);
+			dbHandler.getClerkHandler().rentVehicleNoReserve(fromDateTime, toDateTime, vlicense, dlicense, odometer, card);
 		}
 	}
 
@@ -124,7 +146,7 @@ public class SuperRent implements LoginWindowDelegate, TerminalTransactionsDeleg
 	 *
 	 * Return a vehicle
 	 */
-	public void returnVehicle(String rid, Date retDate, Timestamp retTime, int retOdometer, boolean fullTank) {
-		dbHandler.getClerkHandler().returnVehicle(rid, retDate, retTime, retOdometer, fullTank);
+	public void returnVehicle(String rid, Timestamp retDateTime, int retOdometer, boolean fullTank) {
+		dbHandler.getClerkHandler().returnVehicle(rid, retDateTime, retOdometer, fullTank);
 	}
 }
