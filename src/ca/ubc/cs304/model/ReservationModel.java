@@ -1,4 +1,5 @@
 package ca.ubc.cs304.model;
+
 import java.sql.Timestamp;
 
 /**
