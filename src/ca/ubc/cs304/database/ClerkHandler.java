@@ -1,41 +1,24 @@
 package ca.ubc.cs304.database;
 
 import java.sql.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-
-import ca.ubc.cs304.model.BranchModel;
-import ca.ubc.cs304.model.ReservationModel;
-import ca.ubc.cs304.model.VehicleModel;
 import ca.ubc.cs304.model.CreditCard;
 import ca.ubc.cs304.ui.ReportGenerator;
 
-import static java.lang.Math.floor;
 
 /**
  * This class handles all database related transactions
  * ssh -l jw97 -L localhost:1522:dbhost.students.cs.ubc.ca:1522 remote.students.cs.ubc.ca
  */
 public class ClerkHandler {
-	private static final String ORACLE_URL = "jdbc:oracle:thin:@localhost:1522:stu";
 	private static final String EXCEPTION_TAG = "[EXCEPTION]";
 	private static final String WARNING_TAG = "[WARNING]";
 	
-	private Connection connection = null;
+	private Connection connection;
 	private ReportGenerator re;
 
 	private int rentalID = 1;
 	
 	public ClerkHandler(Connection connection) {
-//		try {
-//			// Load the Oracle JDBC driver
-//			// Note that the path could change for new drivers
-//			DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
-//		} catch (SQLException e) {
-//			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-//		}
 		this.connection = connection;
 		re = new ReportGenerator();
 	}
@@ -52,11 +35,33 @@ public class ClerkHandler {
 
 	public void rentVehicle(String confNo, String vlicense, String dlicense, int odometer, CreditCard card) { // If reservation is provided
 		try {
+			String vtnameSelected = "";
 			Statement stmt = connection.createStatement();
-			ResultSet res = stmt.executeQuery("SELECT rental_fromDateTime,rental_toDateTime FROM reservation WHERE reservation.res_confNo = " + confNo);
+			ResultSet checkVType = stmt.executeQuery("SELECT vtname FROM vehicle WHERE vehicle.vlicense = '" + vlicense + "'");
+			while (checkVType.next()) {
+				vtnameSelected = checkVType.getString("vtname");
+			}
+			ResultSet res = stmt.executeQuery("SELECT vtname,dlicense,rental_fromDateTime,rental_toDateTime FROM reservation WHERE reservation.res_confNo = '" + confNo + "'");
 			while(res.next()) {
+				String vtnameReserved = res.getString("vtname");
+				if (!vtnameSelected.equals(vtnameReserved)) {
+					System.out.println(WARNING_TAG + " Selected vehicle is not of the reserved type!");
+					return;
+				}
+				if (!dlicense.equals(res.getString("dlicense"))) {
+					System.out.println(WARNING_TAG + " Given driver's license does not match reservation license!");
+					return;
+				}
 				Timestamp fromDateTime = res.getTimestamp("rental_fromDateTime");
 				Timestamp toDateTime = res.getTimestamp("rental_toDateTime");
+				PreparedStatement ps2 = connection.prepareStatement("UPDATE vehicle SET status = ? WHERE vlicense = ?");
+				ps2.setString(1, "rented");
+				ps2.setString(2, vlicense);
+				int rowCount = ps2.executeUpdate();
+				if (rowCount == 0) {
+					System.out.println(WARNING_TAG + " Vehicle " + vlicense + " does not exist!");
+					return;
+				}
 				PreparedStatement ps = connection.prepareStatement("INSERT INTO rental VALUES (?,?,?,?,?,?,?,?,?,?)");
 				String rid = String.valueOf(rentalID);
 				while (rid.length() < 6) {
@@ -74,14 +79,7 @@ public class ClerkHandler {
 				ps.setString(9, card.getExpDate());
 				ps.setString(10, confNo);
 				ps.executeUpdate();
-				PreparedStatement ps2 = connection.prepareStatement("UPDATE vehicle SET status = ? WHERE vlicense = ?");
-				ps2.setString(1, "rented");
-				ps2.setString(2, vlicense);
-				int rowCount = ps2.executeUpdate();
-				if (rowCount == 0) {
-					System.out.println(WARNING_TAG + " Vehicle " + vlicense + " does not exist!");
-				}
-				System.out.println(" RECEIPT FOR RENTAL: \n Your Rental ID: " + rentalID + "\n Vehicle License Plate: " + vlicense
+				System.out.println(" RECEIPT FOR RENTAL: \n Your Rental ID: " + rid + "\n Vehicle License Plate: " + vlicense
 						+ "\n From " + fromDateTime + ", " + " to " + toDateTime + "\n Paid for by: " + card.getCardName());
 				connection.commit();
 				ps.close();
@@ -121,7 +119,7 @@ public class ClerkHandler {
 			if (rowCount == 0) {
 				System.out.println(WARNING_TAG + " Vehicle " + vlicense + " does not exist!");
 			}
-			System.out.println(" RECEIPT FOR RENTAL: \n Your Rental ID: " + rentalID + "\n Vehicle License Plate: " + vlicense
+			System.out.println(" RECEIPT FOR RENTAL: \n Your Rental ID: " + rid + "\n Vehicle License Plate: " + vlicense
 					+ "\n From " + fromDateTime + ", " + " to " + toDateTime + "\n Paid for by: " + card.getCardName());
 			connection.commit();
 			ps.close();
@@ -136,18 +134,20 @@ public class ClerkHandler {
 		try {
 			boolean returnComplete = false;
 			double totalCost = 0.0;
+			String vlicense = "";
 			Statement stmt = connection.createStatement();
-			ResultSet checkRepeatID = stmt.executeQuery("SELECT * FROM return WHERE return.rental_rid = " + rid);
+			ResultSet checkRepeatID = stmt.executeQuery("SELECT * FROM return WHERE return.rental_rid = '" + rid + "'");
 			while (checkRepeatID.next()) {
 				System.out.println("***Vehicle is already returned, please select a different vehicle.***");
 				rollbackConnection();
 				return;
 			}
 			checkRepeatID.close();
-			ResultSet vtype = stmt.executeQuery("SELECT rental_fromDateTime,hrate,drate,wrate,hirate,dirate,wirate FROM vehicle,vehicleType,rental " +
-					"WHERE rental.rental_rid = " + rid + "AND vehicle.vlicense = rental.vlicense AND vehicle.vtname = vehicleType.vtname");
+			ResultSet vtype = stmt.executeQuery("SELECT rental.vlicense,rental.rental_fromDateTime,hrate,drate,wrate,hirate,dirate,wirate FROM vehicle,vehicleType,rental " +
+					"WHERE rental.rental_rid = '" + rid + "' AND vehicle.vlicense = rental.vlicense AND vehicle.vtname = vehicleType.vtname");
 			while (vtype.next()) {
 				Timestamp strtDateTime = vtype.getTimestamp("rental_fromDateTime");
+				vlicense = vtype.getString("vlicense");
 				//int odometer = vtype.getInt("rental_odometer");
 				long end = retDateTime.getTime();
 				long start = strtDateTime.getTime();
@@ -183,6 +183,10 @@ public class ClerkHandler {
 			}
 			ps.setDouble(5, totalCost);
 			ps.executeUpdate();
+            PreparedStatement ps2 = connection.prepareStatement("UPDATE vehicle SET status = ? WHERE vlicense = ?");
+            ps2.setString(1, "available");
+            ps2.setString(2, vlicense);
+            ps2.executeUpdate();
 			connection.commit();
 			ps.close();
 		} catch (SQLException e) {
@@ -190,23 +194,6 @@ public class ClerkHandler {
 			rollbackConnection();
 		}
 	}
-
-//	public boolean login(String username, String password) {
-//		try {
-//			if (connection != null) {
-//				connection.close();
-//			}
-//
-//			connection = DriverManager.getConnection(ORACLE_URL, username, password);
-//			connection.setAutoCommit(false);
-//
-//			System.out.println("\nConnected to Oracle!");
-//			return true;
-//		} catch (SQLException e) {
-//			System.out.println(EXCEPTION_TAG + " " + e.getMessage());
-//			return false;
-//		}
-//	}
 
 	private void rollbackConnection() {
 		try  {

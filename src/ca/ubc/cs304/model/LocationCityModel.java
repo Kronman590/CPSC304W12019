@@ -9,9 +9,7 @@ public class LocationCityModel {
         this.city = city;
     }
 
-    public String getLocation() {
-        return location;
-    }
+    public String getLocation() { return location; }
 
     public String getCity() {
         return city;
